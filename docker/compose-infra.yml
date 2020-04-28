@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  go-rabbit-mq:
+    container_name: go-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - go-network
+
+volumes:
+  rabitmq:
+
+networks:
+  go-network:
+    driver: bridge

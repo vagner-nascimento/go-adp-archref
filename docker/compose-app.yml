@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  go-app:
+    container_name: go-app
+    build:
+      context: ..
+      dockerfile: AppDockerfile
+    depends_on:
+      - go-rabbit-mq
+    environment:
+      - GO_ENV=docker
+    restart: on-failure
+    ports:
+      - 3000:3000
+    networks:
+      - go-network
+    command: >
+      bash -c "/scripts/wait-for-it.sh -t 8 go-rabbit-mq:5672 -- /app/main"
+
+  go-rabbit-mq:
+    container_name: go-rabbit-mq
+    image: rabbitmq:3.6-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabitmq:/etc/rabbitmq/
+    networks:
+      - go-network
+
+volumes:
+  rabitmq:
+
+networks:
+  go-network:
+    driver: bridge

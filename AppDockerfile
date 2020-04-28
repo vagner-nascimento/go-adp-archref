@@ -1,0 +1,36 @@
+FROM golang:alpine
+
+# Install bash to use at compose commands
+RUN apk update && apk add bash
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GO_ENV=docker
+
+WORKDIR /build
+
+COPY . .
+
+# Download dependency using go mod
+RUN go mod download
+
+# Build the application
+RUN go build -o main .
+
+# Move wait for scipt for root folder
+RUN mkdir /scripts
+RUN mv ./docker/wait-for-it.sh /scripts
+
+RUN mkdir /app
+
+# Copy binary from build to app folder
+RUN cp main /app
+
+# Copy config files into the app folder
+RUN cp -rf config/ /app
+
+RUN rm -rf /build
+
+WORKDIR /app

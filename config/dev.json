@@ -1,0 +1,35 @@
+{
+  "data": {
+    "amqp": {
+      "connStr": "amqp://guest:guest@localhost:5672",
+      "connectionRetry": {
+        "sleep": 5,
+        "maxTries": 5
+      }
+    }
+  },
+  "presentation": {
+    "web": {
+      "port": 3000
+    }
+  },
+  "integration": {
+    "amqp": {
+      "subs": {
+        "seller": {
+          "topic": "q-seller",
+          "consumer": "c-seller"
+        },
+        "merchant": {
+          "topic": "q-merchant",
+          "consumer": "c-merchant"
+        }
+      },
+      "pubs": {
+        "crm-account": {
+          "topic": "q-crm-account"
+        }
+      }
+    }
+  }
+}
