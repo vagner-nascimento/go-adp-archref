@@ -41,7 +41,7 @@ func subscribeConsumers(subs []Subscription) error {
 
 			subsFailed++
 		} else {
-			logger.Info(fmt.Sprintf("consumer %s subscried on topic %s", sub.GetConsumer(), sub.GetTopic()))
+			logger.Info(fmt.Sprintf("consumer %s subscried on topic %s", sub.GetConsumer(), sub.GetTopic()), nil)
 		}
 	}
 

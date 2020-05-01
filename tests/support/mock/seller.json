@@ -1,0 +1,18 @@
+{
+  "seller_id": "seller_uuid",
+  "merchant_id": "seller_merch_uuid",
+  "name": "Carmen Flower Seller",
+  "legal_document_number": "legal_doc_num",
+  "contacts": [
+    {
+      "name": "Sell_cont1",
+      "phone": "5551888999777",
+      "email": "cont1@gmail.com"
+    },
+    {
+      "name": "Sell_cont2",
+      "phone": "5551444555888",
+      "email": "cont2@gmail.com"
+    }
+  ]
+}

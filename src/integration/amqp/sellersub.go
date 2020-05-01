@@ -1,9 +1,7 @@
 package integration
 
 import (
-	"fmt"
 	"github.com/vagner-nascimento/go-adp-archref/config"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
 	"github.com/vagner-nascimento/go-adp-archref/src/infra/repository"
 )
 
@@ -31,7 +29,7 @@ func newSellerSub() repository.Subscription {
 		topic:    sellerConfig.Topic,
 		consumer: sellerConfig.Consumer,
 		handler: func(data []byte) {
-			logger.Info(fmt.Sprintf("seller sub handler data %s", string(data)))
+			createAccount(data)
 		},
 	}
 }

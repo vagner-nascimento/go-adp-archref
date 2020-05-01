@@ -2,7 +2,6 @@ package loader
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/vagner-nascimento/go-adp-archref/config"
 	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
 	integration "github.com/vagner-nascimento/go-adp-archref/src/integration/amqp"
@@ -19,7 +18,7 @@ func LoadApplication() *chan error {
 }
 
 func loadConfiguration() {
-	logger.Info("loading configurations")
+	logger.Info("loading configurations", nil)
 	env := os.Getenv("GO_ENV")
 	if env == "" {
 		env = "DEV"
@@ -30,17 +29,17 @@ func loadConfiguration() {
 	}
 
 	conf, _ := json.Marshal(config.Get())
-	logger.Info(fmt.Sprintf("configurations loaded %s", string(conf)))
+	logger.Info("configurations loaded %s", string(conf))
 }
 
 func loadIntegration(errsCh *chan error) {
-	logger.Info("loading subscribers asynchronously")
+	logger.Info("loading subscribers asynchronously", nil)
 	go func(errs *chan error) {
 		if err := integration.SubscribeConsumers(); err != nil {
 			logger.Error("error subscribe consumers", err)
 			*errs <- err
 		} else {
-			logger.Info("consumers successfully subscribed")
+			logger.Info("consumers successfully subscribed", nil)
 		}
 	}(errsCh)
 }

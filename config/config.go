@@ -21,7 +21,7 @@ type AmqpDataConfig struct {
 }
 
 type DataConfig struct {
-	Amqp  AmqpDataConfig  `json:"amqp"`
+	Amqp AmqpDataConfig `json:"amqp"`
 }
 
 type PresentationWebConfig struct {
@@ -38,8 +38,8 @@ type TopicConfig struct {
 }
 
 type SubsConfig struct {
-	Seller       TopicConfig `json:"seller"`
-	Merchant       TopicConfig `json:"merchant"`
+	Seller   TopicConfig `json:"seller"`
+	Merchant TopicConfig `json:"merchant"`
 }
 
 type PubsConfig struct {
@@ -59,6 +59,7 @@ type Config struct {
 	Data         DataConfig         `json:"data"`
 	Presentation PresentationConfig `json:"presentation"`
 	Integration  IntegrationConfig  `json:"integration"`
+	Env          string
 }
 
 var config *Config
@@ -76,6 +77,9 @@ func Load(environment string) error {
 	if err := json.Unmarshal(bytes, &config); err != nil {
 		return err
 	}
+
+	config.Env = environment
+
 	return nil
 }
 

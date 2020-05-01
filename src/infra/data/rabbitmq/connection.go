@@ -59,11 +59,11 @@ func connect() (err error) {
 	for currentTry := 1; currentTry <= maxTries; currentTry++ {
 		if singletonConn.conn, err = amqp.Dial(config.Get().Data.Amqp.ConnStr); err != nil {
 			if maxTries > 1 {
-				logger.Info(fmt.Sprintf("waiting %d seconds before try to reconnect %d of %d tries", sleep, currentTry, maxTries))
+				logger.Info(fmt.Sprintf("waiting %d seconds before try to reconnect %d of %d tries", sleep, currentTry, maxTries), nil)
 				time.Sleep(sleep * time.Second)
 			}
 		} else {
-			logger.Info("successfully connected into rabbit mq")
+			logger.Info("successfully connected into rabbit mq", nil)
 
 			errs := make(chan *amqp.Error)
 			singletonConn.conn.NotifyClose(errs)
@@ -92,4 +92,3 @@ func reconnectOnClose(errs chan *amqp.Error) {
 		}
 	}
 }
-
