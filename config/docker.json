@@ -17,17 +17,17 @@
     "amqp": {
       "subs": {
         "seller": {
-          "topic": "q-seller",
+          "topic": "q-sellers",
           "consumer": "c-seller"
         },
         "merchant": {
-          "topic": "q-merchant",
+          "topic": "q-merchants",
           "consumer": "c-merchant"
         }
       },
       "pubs": {
         "crm-account": {
-          "topic": "q-crm-account"
+          "topic": "q-accounts"
         }
       }
     },

@@ -11,7 +11,6 @@ func getFormattedMessage(msg string) string {
 	return fmt.Sprintf("%s - %s", time.Now().Format("02/01/2006 15:04:05"), msg)
 }
 
-// TODO: improve log to print entities details
 func Info(msg string, data interface{}) {
 	if data == nil {
 		data = ""
