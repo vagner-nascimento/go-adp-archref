@@ -29,7 +29,7 @@ func loadConfiguration() {
 	}
 
 	conf, _ := json.Marshal(config.Get())
-	logger.Info("configurations loaded %s", string(conf))
+	logger.Info("configurations loaded", string(conf))
 }
 
 func loadIntegration(errsCh *chan error) {
