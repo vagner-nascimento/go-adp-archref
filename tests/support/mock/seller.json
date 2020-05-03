@@ -1,6 +1,6 @@
 {
-  "seller_id": "seller_uuid",
-  "merchant_id": "seller_merch_uuid",
+  "seller_id": "s_1",
+  "merchant_id": "m_1",
   "name": "Carmen Flower Seller",
   "legal_document_number": "legal_doc_num",
   "contacts": [

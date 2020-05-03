@@ -25,6 +25,16 @@ type merchant struct {
 	Name string `json:"name"`
 }
 
+type accountType struct {
+	merchant string
+	seller string
+}
+
+var accountTypeEnum = accountType{
+	merchant: "merchant",
+	seller:   "seller",
+}
+
 type Account struct {
 	Type                string    `json:"type" validate:"required,min=6,max=8"` // TODO: realise how to validate specific values
 	Id                  string    `json:"id"`
@@ -51,7 +61,7 @@ func getAccountFromSeller(seller seller) *Account {
 	}
 
 	return &Account{
-		Type:                "seller",
+		Type:                accountTypeEnum.seller,
 		Id:                  *seller.Id,
 		MerchantId:          &seller.MerchantId,
 		Name:                seller.Name,
@@ -62,7 +72,7 @@ func getAccountFromSeller(seller seller) *Account {
 
 func getAccountFromMerchant(merchant merchant) *Account {
 	return &Account{
-		Type:     "merchant",
+		Type:     accountTypeEnum.merchant,
 		Id:       merchant.Id,
 		Name:     merchant.Name,
 		Contacts: []contact{},

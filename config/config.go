@@ -51,8 +51,19 @@ type AmqIntegrationConfig struct {
 	Pubs PubsConfig `json:"pubs"`
 }
 
+type ResClientConfig struct {
+	BaseUrl string `json:"baseUrl"`
+	TimeOut time.Duration `json:"timeOut"`
+	RejectUnauthorized bool `json:"rejectUnauthorized"`
+}
+
+type RestIntegrationConfig struct {
+	MerchantAccounts ResClientConfig `json:"merchantAccounts"`
+}
+
 type IntegrationConfig struct {
 	Amqp AmqIntegrationConfig `json:"amqp"`
+	Rest RestIntegrationConfig `json:"rest"`
 }
 
 type Config struct {

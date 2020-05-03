@@ -30,6 +30,13 @@
           "topic": "q-crm-account"
         }
       }
+    },
+    "rest": {
+      "merchantAccounts": {
+        "baseUrl": "http://localhost:4000/merchant-accounts",
+        "timeOut": 10,
+        "rejectUnauthorized": false
+      }
     }
   }
 }

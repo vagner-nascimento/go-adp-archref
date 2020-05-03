@@ -1,5 +1,6 @@
 package app
 
-type DataHandler interface {
+type AccountDataHandler interface {
 	Save(account *Account) error
+	GetMerchantAccounts(merchantId string) ([]byte, error)
 }
