@@ -29,6 +29,14 @@ func getAccountFromMerchant(merchant merchant) *Account {
 	}
 }
 
+func newMerchantFromBytes(bytes []byte) (merchant merchant, err error) {
+	if err = json.Unmarshal(bytes, &merchant); err != nil {
+		err = localerrors.NewConversionError("error on convert bytes into Merchant Accounts array", err)
+	}
+
+	return merchant, err
+}
+
 func newMerchantAccountsFromBytes(bytes []byte) (accounts []merchantAccount, err error) {
 	if err = json.Unmarshal(bytes, &accounts); err != nil {
 		err = localerrors.NewConversionError("error on convert bytes into Merchant Accounts array", err)

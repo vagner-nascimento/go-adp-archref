@@ -5,6 +5,7 @@ import (
 	"github.com/vagner-nascimento/go-adp-archref/loader"
 )
 
+// TODO: realise how to stop app on try to reconnect into rabbit mq
 func main() {
 	errs := loader.LoadApplication()
 	for {

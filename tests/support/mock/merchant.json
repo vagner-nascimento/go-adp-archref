@@ -1,5 +1,12 @@
-{
-  "merchant_id": "m_1",
-  "name": "Carmen Flowers",
-  "country": "US"
-}
+[
+  {
+    "merchant_id": "m_1",
+    "name": "Carmen Flowers",
+    "country": "US"
+  },
+  {
+    "merchant_id": "m_2",
+    "name": "Center Shop",
+    "country": "UK"
+  }
+]

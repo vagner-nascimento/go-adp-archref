@@ -15,6 +15,7 @@ import (
 type accountRepository struct {
 	topic          string
 	merchantAccCli *rest.Client
+	merchantsCli   *rest.Client
 }
 
 func (repo *accountRepository) Save(account *app.Account) (err error) {
@@ -38,16 +39,33 @@ func (repo *accountRepository) GetMerchantAccounts(merchantId string) (data []by
 	return data, err
 }
 
+func (repo *accountRepository) GetMerchant(merchantId string) (data []byte, err error) {
+	_, data, err = repo.merchantsCli.Get("", merchantId)
+	if err != nil {
+		msg := "error on try to get Merchant"
+		logger.Error(msg, err)
+		err = errors.New(msg)
+	}
+
+	return data, err
+}
+
 func NewAccountRepository() *accountRepository {
 	intConf := config.Get().Integration
 	mAccCliConf := intConf.Rest.MerchantAccounts
+	mCliConf := intConf.Rest.Merchants
 
 	return &accountRepository{
+		topic: intConf.Amqp.Pubs.CrmAccount.Topic,
 		merchantAccCli: rest.NewClient(
 			mAccCliConf.BaseUrl,
 			mAccCliConf.TimeOut*time.Second,
 			mAccCliConf.RejectUnauthorized,
 		),
-		topic: intConf.Amqp.Pubs.CrmAccount.Topic,
+		merchantsCli: rest.NewClient(
+			mCliConf.BaseUrl,
+			mCliConf.TimeOut*time.Second,
+			mCliConf.RejectUnauthorized,
+		),
 	}
 }
