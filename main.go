@@ -6,8 +6,6 @@ import (
 	"os"
 )
 
-// TODO: realise how to stop app when amqp connection is lost forever
-// it should be implemented on main, loader or by config because is an specific rule of the application
 func main() {
 	var err error
 	if errsCh := loader.LoadApplication(); errsCh != nil {

@@ -7,7 +7,7 @@ import (
 )
 
 type Account struct {
-	Type                string            `json:"type" validate:"required,min=6,max=8"` // TODO: realise how to validate specific values
+	Type                string            `json:"type" validate:"required,min=6,max=8"`
 	Id                  string            `json:"id"`
 	MerchantId          *string           `json:"merchant_id"`
 	Name                string            `json:"name" validate:"required,min=3,max=150"`
