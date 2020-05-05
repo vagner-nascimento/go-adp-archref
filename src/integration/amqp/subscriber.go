@@ -1,6 +1,6 @@
 package integration
 
-import "github.com/vagner-nascimento/go-adp-archref/src/infra/repository"
+import "github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 
 func SubscribeConsumers() error {
 	return repository.SubscribeConsumers(getSubscriptions())

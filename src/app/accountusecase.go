@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/vagner-nascimento/go-adp-archref/src/channel"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/channel"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 )
 
 type AccountUseCase struct {

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/streadway/amqp"
-	"github.com/vagner-nascimento/go-adp-archref/config"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"sync"
 	"time"
 )

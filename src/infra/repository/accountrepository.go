@@ -3,12 +3,12 @@ package repository
 import (
 	"encoding/json"
 	"errors"
-	"github.com/vagner-nascimento/go-adp-archref/config"
-	"github.com/vagner-nascimento/go-adp-archref/src/app"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/data/rabbitmq"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/data/rest"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
-	"github.com/vagner-nascimento/go-adp-archref/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rabbitmq"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rest"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
 	"time"
 )
 

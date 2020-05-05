@@ -3,8 +3,8 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
-	"github.com/vagner-nascimento/go-adp-archref/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
 	"io/ioutil"
 	"net/http"
 )

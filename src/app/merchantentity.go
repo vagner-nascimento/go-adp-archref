@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-archref/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
 )
 
 type (

@@ -25,7 +25,7 @@ type DataConfig struct {
 }
 
 type PresentationWebConfig struct {
-	Port int16 `json:"port"`
+	Port int `json:"port"`
 }
 
 type PresentationConfig struct {

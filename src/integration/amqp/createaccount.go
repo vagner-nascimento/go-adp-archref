@@ -2,9 +2,9 @@ package integration
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-archref/src/app"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/repository"
+	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 )
 
 func createAccount(data []byte) (newAcc *app.Account, err error) {

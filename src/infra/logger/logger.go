@@ -3,7 +3,7 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-archref/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
 	"time"
 )
 

@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/data/rabbitmq"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rabbitmq"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 )
 
 type Subscription interface {

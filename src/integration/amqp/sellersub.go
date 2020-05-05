@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"github.com/vagner-nascimento/go-adp-archref/config"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/repository"
+	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 )
 
 type sellerSub struct {

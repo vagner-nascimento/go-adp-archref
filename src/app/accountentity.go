@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/vagner-nascimento/go-adp-archref/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
 )
 
 type Account struct {

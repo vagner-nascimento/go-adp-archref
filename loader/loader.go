@@ -2,19 +2,21 @@ package loader
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-archref/config"
-	"github.com/vagner-nascimento/go-adp-archref/src/infra/logger"
-	integration "github.com/vagner-nascimento/go-adp-archref/src/integration/amqp"
+	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	integration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	"github.com/vagner-nascimento/go-adp-bridge/src/presentation"
 	"os"
 )
 
-func LoadApplication() *chan error {
+func LoadApplication() <-chan error {
 	loadConfiguration()
 
-	errs := make(chan error)
-	loadIntegration(&errs)
+	if loadIntegration() {
+		return loadPresentation()
+	}
 
-	return &errs
+	return nil
 }
 
 func loadConfiguration() {
@@ -32,14 +34,17 @@ func loadConfiguration() {
 	logger.Info("configurations loaded", string(conf))
 }
 
-func loadIntegration(errsCh *chan error) {
-	logger.Info("loading subscribers asynchronously", nil)
-	go func(errs *chan error) {
-		if err := integration.SubscribeConsumers(); err != nil {
-			logger.Error("error subscribe consumers", err)
-			*errs <- err
-		} else {
-			logger.Info("consumers successfully subscribed", nil)
-		}
-	}(errsCh)
+func loadIntegration() bool {
+	logger.Info("loading subscribers", nil)
+	if err := integration.SubscribeConsumers(); err != nil {
+		logger.Error("error subscribe consumers", err)
+		return false
+	} else {
+		logger.Info("consumers successfully subscribed", nil)
+		return true
+	}
+}
+
+func loadPresentation() <-chan error {
+	return presentation.StartRestPresentation()
 }
