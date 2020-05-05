@@ -7,12 +7,12 @@ This kind of adapter act like a bridge between topics, subscribing in one or N t
     - [x] consume topics
     - [x] publish on topics
     - [x] call http clients
-    - [ ] expose por 3000 to check health
+    - [x] expose por 3000 to check health
     - [ ] use in data models:
         - [x] strings
+        - [x] slices
         - [ ] int
         - [ ] bool
         - [ ] dates
         - [ ] floats
-        - [x] slice
     - [ ] tests with coverage
