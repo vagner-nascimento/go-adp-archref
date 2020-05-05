@@ -16,8 +16,9 @@ type ConnectionRetry struct {
 }
 
 type AmqpDataConfig struct {
-	ConnStr   string          `json:"connStr"`
-	ConnRetry ConnectionRetry `json:"connectionRetry"`
+	ConnStr              string          `json:"connStr"`
+	ConnRetry            ConnectionRetry `json:"connectionRetry"`
+	ExitOnLostConnection bool            `json:"exitOnLostConnection"`
 }
 
 type DataConfig struct {

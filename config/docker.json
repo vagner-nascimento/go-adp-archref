@@ -2,6 +2,7 @@
   "data": {
     "amqp": {
       "connStr": "amqp://guest:guest@go-rabbit-mq:5672",
+      "exitOnLostConnection": true,
       "connectionRetry": {
         "sleep": 5,
         "maxTries": 5

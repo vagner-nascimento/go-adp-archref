@@ -27,7 +27,7 @@ func loadConfiguration() {
 	}
 	if err := config.Load(env); err != nil {
 		logger.Error("cannot load configurations", err)
-		panic(err)
+		os.Exit(1)
 	}
 
 	conf, _ := json.Marshal(config.Get())

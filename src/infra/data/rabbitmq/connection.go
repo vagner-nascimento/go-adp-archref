@@ -6,6 +6,7 @@ import (
 	"github.com/streadway/amqp"
 	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"os"
 	"sync"
 	"time"
 )
@@ -73,9 +74,14 @@ func connect() (err error) {
 	}
 
 	if err != nil {
-		logger.Error("error on connect into rabbit mq", err)
-
+		msg := "error on connect into rabbit mq"
 		singletonConn.isAlive = false
+		if config.Get().Data.Amqp.ExitOnLostConnection {
+			logger.Error(fmt.Sprintf("%s - exiting application after %s retires with error", msg, maxTries), err)
+			os.Exit(1)
+		}
+
+		logger.Error(msg, err)
 		err = errors.New("an error occurred on try to connect into rabbit mq")
 	}
 

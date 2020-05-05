@@ -2,9 +2,10 @@
   "data": {
     "amqp": {
       "connStr": "amqp://guest:guest@localhost:5672",
+      "exitOnLostConnection": true,
       "connectionRetry": {
-        "sleep": 5,
-        "maxTries": 5
+        "sleep": 2,
+        "maxTries": 10
       }
     }
   },
