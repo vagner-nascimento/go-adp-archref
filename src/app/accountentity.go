@@ -6,6 +6,7 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
+// TODO: add other data types
 type (
 	contact struct {
 		Name  string `json:"name"`
