@@ -25,16 +25,6 @@ func (c *Client) Get(url, id string) (status int, data []byte, err error) {
 	clearUrl(&url)
 
 	path := url
-
-	/*
-		path == ""
-		path == "otherRes/o"
-
-		if path <= 0: path = id
-		else path += fmt.Sprintf("%s/", id)
-
-	*/
-
 	if len(path) <= 0 {
 		path = id
 	} else {

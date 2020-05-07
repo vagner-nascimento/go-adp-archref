@@ -18,8 +18,10 @@ func (accUse *AccountUseCase) Create(data []byte) (account *Account, err error) 
 		go doSellerAccountEnrichment(account, accUse.repo, selEnrichErrs)
 
 		enrichErrs := channel.MultiplexErrors(merEnrichErrs, selEnrichErrs)
-		for enrichErr := range enrichErrs {
-			logger.Error("error on account enrichment", enrichErr)
+		for err := range enrichErrs {
+			if err != nil {
+				logger.Error("error on account enrichment", err)
+			}
 		}
 
 		if err = accUse.repo.Save(account); err != nil {

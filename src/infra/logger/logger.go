@@ -3,7 +3,7 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 	"time"
 )
 
@@ -21,10 +21,20 @@ func Info(msg string, data interface{}) {
 
 func Error(msg string, err error) {
 	switch err.(type) {
-	case *localerrors.ConversionError:
+	case *applicationerror.ApplicationError:
 		{
-			cErr := err.(*localerrors.ConversionError)
-			err = errors.New(fmt.Sprintf("%s - original error: %s", cErr, cErr.SourceError()))
+			cErr := err.(*applicationerror.ApplicationError)
+			originErr := cErr.OriginalError()
+			details := cErr.Details()
+
+			if originErr == nil {
+				originErr = errors.New("none error")
+			}
+			if details == nil {
+				details = "none details"
+			}
+
+			err = errors.New(fmt.Sprintf("%s - original error: %s, details %s", cErr, originErr, details))
 		}
 	}
 

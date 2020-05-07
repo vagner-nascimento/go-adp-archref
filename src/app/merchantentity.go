@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
 type (
@@ -31,7 +31,7 @@ func getAccountFromMerchant(merchant merchant) *Account {
 
 func newMerchantFromBytes(bytes []byte) (merchant merchant, err error) {
 	if err = json.Unmarshal(bytes, &merchant); err != nil {
-		err = localerrors.NewConversionError("error on convert bytes into Merchant Accounts array", err)
+		err = applicationerror.New("error on convert bytes into Merchant Accounts array", err, nil)
 	}
 
 	return merchant, err
@@ -39,7 +39,7 @@ func newMerchantFromBytes(bytes []byte) (merchant merchant, err error) {
 
 func newMerchantAccountsFromBytes(bytes []byte) (accounts []merchantAccount, err error) {
 	if err = json.Unmarshal(bytes, &accounts); err != nil {
-		err = localerrors.NewConversionError("error on convert bytes into Merchant Accounts array", err)
+		err = applicationerror.New("error on convert bytes into Merchant Accounts array", err, nil)
 	}
 
 	return accounts, err

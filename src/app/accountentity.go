@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/vagner-nascimento/go-adp-bridge/src/localerrors"
+	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
 type Account struct {
@@ -34,7 +34,7 @@ func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
 func newAccountFromBytes(data []byte) (*Account, error) {
 	var seller seller
 	if err := json.Unmarshal(data, &seller); err != nil {
-		return nil, localerrors.NewConversionError("cannot convert bytes to an Account", err)
+		return nil, applicationerror.New("cannot convert bytes to an Account", err, nil)
 	}
 
 	if seller.Id != nil {
@@ -49,7 +49,7 @@ func newAccountFromBytes(data []byte) (*Account, error) {
 
 	var merchant merchant
 	if err := json.Unmarshal(data, &merchant); err != nil {
-		return nil, localerrors.NewConversionError("cannot convert bytes to an Account", err)
+		return nil, applicationerror.New("cannot convert bytes to an Account", err, nil)
 	}
 	// TODO: make a func to it because is repetitive
 	account := getAccountFromMerchant(merchant)
