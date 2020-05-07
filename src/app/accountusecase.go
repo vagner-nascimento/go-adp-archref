@@ -10,7 +10,7 @@ type AccountUseCase struct {
 }
 
 func (accUse *AccountUseCase) Create(data []byte) (account *Account, err error) {
-	if account, err = newAccountFromBytes(data); err == nil {
+	if account, err = newAccount(data); err == nil {
 		merEnrichErrs := make(chan error)
 		selEnrichErrs := make(chan error)
 
@@ -40,9 +40,9 @@ func NewAccountUseCase(repo AccountDataHandler) AccountUseCase {
 
 func doMerchantAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan error) {
 	if acc.Type == accountTypeEnum.merchant {
-		if accountBytes, err := repo.GetMerchantAccounts(acc.Id); accountBytes != nil {
+		if accountBytes, err := repo.GetMerchantAccounts(*acc.MerchantId); accountBytes != nil {
 			errCh <- err
-			if merAccounts, err := newMerchantAccountsFromBytes(accountBytes); err != nil {
+			if merAccounts, err := newMerchantAccounts(accountBytes); err != nil {
 				errCh <- err
 			} else {
 				for _, merAcc := range merAccounts {
@@ -59,7 +59,7 @@ func doSellerAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan
 	if acc.Type == accountTypeEnum.seller {
 		if merchantBytes, err := repo.GetMerchant(*acc.MerchantId); merchantBytes != nil {
 			errCh <- err
-			if merchant, err := newMerchantFromBytes(merchantBytes); err != nil {
+			if merchant, err := newMerchant(merchantBytes); err != nil {
 				errCh <- err
 			} else {
 				acc.Country = &merchant.Country

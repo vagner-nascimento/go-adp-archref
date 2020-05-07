@@ -19,17 +19,7 @@ type (
 	}
 )
 
-func getAccountFromMerchant(merchant merchant) *Account {
-	return &Account{
-		Type:     accountTypeEnum.merchant,
-		Id:       merchant.Id,
-		Name:     merchant.Name,
-		Country:  &merchant.Country,
-		Contacts: []contact{},
-	}
-}
-
-func newMerchantFromBytes(bytes []byte) (merchant merchant, err error) {
+func newMerchant(bytes []byte) (merchant merchant, err error) {
 	if err = json.Unmarshal(bytes, &merchant); err != nil {
 		err = applicationerror.New("error on convert bytes into Merchant Accounts array", err, nil)
 	}
@@ -37,7 +27,7 @@ func newMerchantFromBytes(bytes []byte) (merchant merchant, err error) {
 	return merchant, err
 }
 
-func newMerchantAccountsFromBytes(bytes []byte) (accounts []merchantAccount, err error) {
+func newMerchantAccounts(bytes []byte) (accounts []merchantAccount, err error) {
 	if err = json.Unmarshal(bytes, &accounts); err != nil {
 		err = applicationerror.New("error on convert bytes into Merchant Accounts array", err, nil)
 	}
