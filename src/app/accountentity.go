@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
-	"time"
 )
 
 // TODO: add other data types
@@ -23,9 +22,8 @@ type (
 		Contacts            []contact         `json:"contacts"`
 		MerchantAccounts    []merchantAccount `json:"merchant_accounts"`
 		Country             *string           `json:"country"`
-		UpdatedDate         time.Time         `json:"updated_date"`
-		// TODO: realise how to make dates accept at least this format "YYYY/MM/DD HH:MM:SS"
-		// today it accepts only the format YYYY-MM-DDTHH:MM:SSZ
+		UpdatedDate         *dateTime         `json:"updated_date"`
+		LastPaymentDate     *date             `json:"last_payment_date"`
 	}
 )
 

@@ -11,8 +11,8 @@ This kind of adapter act like a bridge between topics, subscribing in one or N t
     - [ ] use in data models:
         - [x] strings
         - [x] slices
+        - [x] dates (date time and only date)
         - [ ] int
         - [ ] bool
-        - [ ] dates
         - [ ] floats
     - [ ] tests with coverage
