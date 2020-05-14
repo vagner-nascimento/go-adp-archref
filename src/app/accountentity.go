@@ -6,7 +6,6 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
-// TODO: add other data types
 type (
 	contact struct {
 		Name  string `json:"name"`
@@ -14,7 +13,7 @@ type (
 		Email string `json:"email"`
 	}
 	// TODO: realise how to validate only if is not null on optionals
-	// TODO: float32, don't accept more than 2 decimals (after comma)
+	// TODO: float32: make don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
 		MerchantId          *string           `json:"merchant_id"`
