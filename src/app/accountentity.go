@@ -13,6 +13,8 @@ type (
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	}
+	// TODO: realise how to validate only if is not null on optionals
+	// TODO: float32, don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
 		MerchantId          *string           `json:"merchant_id"`
@@ -24,6 +26,9 @@ type (
 		Country             *string           `json:"country"`
 		UpdatedDate         *dateTime         `json:"updated_date"`
 		LastPaymentDate     *date             `json:"last_payment_date"`
+		BillingDay          *int              `json:"billing_day"`
+		IsActive            *bool             `json:"is_active" validate:"required"`
+		CreditLimit         *float32          `json:"credit_limit"`
 	}
 )
 

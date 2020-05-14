@@ -12,7 +12,7 @@ This kind of adapter act like a bridge between topics, subscribing in one or N t
         - [x] strings
         - [x] slices
         - [x] dates (date time and only date)
-        - [ ] int
-        - [ ] bool
-        - [ ] floats
+        - [x] int
+        - [x] bool
+        - [x] float
     - [ ] tests with coverage

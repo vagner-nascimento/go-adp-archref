@@ -4,6 +4,7 @@
   "name": "Carmen Flower Seller",
   "legal_document_number": "legal_doc_num",
   "last_payment_date": "2019-12-15",
+  "is_active": true,
   "contacts": [
     {
       "name": "Sell_cont1",
