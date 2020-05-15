@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
 type (
@@ -12,7 +11,7 @@ type (
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	}
-	// TODO: realise how to validate only if is not null on optionals
+	// TODO: realise how to validate optionals only if is informed
 	// TODO: float32: make don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
@@ -31,14 +30,14 @@ type (
 	}
 )
 
-func (acc *Account) Validate() (errs validator.ValidationErrors) {
+func (acc *Account) Validate() validator.ValidationErrors {
 	v := validator.New()
 
 	if err := v.Struct(*acc); err != nil {
-		errs = err.(validator.ValidationErrors)
+		return err.(validator.ValidationErrors)
 	}
 
-	return errs
+	return nil
 }
 
 func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
@@ -46,17 +45,17 @@ func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
 }
 
 func newAccount(data []byte) (*Account, error) {
-	var acc Account
-	if err := json.Unmarshal(data, &acc); err != nil {
-		return nil, applicationerror.New("cannot convert data into an Account", err, nil)
+	var (
+		acc Account
+		err error
+	)
+	if err = json.Unmarshal(data, &acc); err == nil {
+		assertAccountData(&acc)
+		// TODO: realise why this fucking shit validation error can't be checked nil as a normal error
+		err = acc.Validate()
 	}
 
-	assertAccountData(&acc)
-	if err := acc.Validate(); err != nil {
-		return nil, err
-	}
-
-	return &acc, nil
+	return &acc, err
 }
 
 func assertAccountData(acc *Account) {

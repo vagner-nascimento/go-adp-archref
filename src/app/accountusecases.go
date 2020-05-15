@@ -1,7 +1,8 @@
 package app
 
 func createAccount(data []byte) (*Account, error) {
-	return newAccount(data)
+	acc, err := newAccount(data)
+	return acc, err
 }
 
 func enrichMerchantAccount(acc *Account, mAccounts []merchantAccount) {
