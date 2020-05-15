@@ -34,12 +34,12 @@
     },
     "rest": {
       "merchantAccounts": {
-        "baseUrl": "http://localhost:4000/merchant-accounts",
+        "baseUrl": "http://rest-mock:4000/merchant-accounts",
         "timeOut": 10,
         "rejectUnauthorized": false
       },
       "merchants": {
-        "baseUrl": "http://localhost:4000/merchants",
+        "baseUrl": "http://rest-mock:4000/merchants",
         "timeOut": 10,
         "rejectUnauthorized": false
       }
