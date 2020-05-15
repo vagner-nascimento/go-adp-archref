@@ -8,8 +8,8 @@ import (
 )
 
 func createAccount(data []byte) (newAcc *app.Account, err error) {
-	accUs := app.NewAccountUseCase(repository.NewAccountRepository())
-	if newAcc, err = accUs.Create(data); err != nil {
+	accAdp := app.NewAccountAdapter(repository.NewAccountRepository())
+	if newAcc, err = accAdp.AddAccount(data); err != nil {
 		logger.Error("error on create a new Account", err)
 		newAcc = nil
 	} else {

@@ -8,7 +8,7 @@ This kind of adapter act like a bridge between topics, subscribing in one or N t
     - [x] publish on topics
     - [x] call http clients
     - [x] expose por 3000 to check health
-    - [ ] use in data models:
+    - [x] use in data models:
         - [x] strings
         - [x] slices
         - [x] dates (date time and only date)
