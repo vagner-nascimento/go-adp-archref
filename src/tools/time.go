@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// TODO: realise why this error isn't printing details on logger.Error
 func ParseBytesToFormattedTime(data []byte, validFormats []string) (t time.Time, err error) {
 	s := strings.Trim(string(data), "\"")
 	for _, f := range validFormats {

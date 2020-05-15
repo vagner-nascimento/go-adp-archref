@@ -19,7 +19,6 @@ func Info(msg string, data interface{}) {
 	fmt.Println(getFormattedMessage(msg), data)
 }
 
-// TODO: realise why
 func Error(msg string, err error) {
 	switch err.(type) {
 	case *applicationerror.ApplicationError:
