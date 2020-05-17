@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
-	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
+	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
 )
 
 type (
@@ -12,22 +12,21 @@ type (
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	}
-	// TODO: realise how to validate optionals only if is informed
 	// TODO: float32: make don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
 		MerchantId          *string           `json:"merchant_id"`
 		SellerId            *string           `json:"seller_id"`
 		Name                string            `json:"name" validate:"required,min=3,max=150"`
-		LegalDocumentNumber *string           `json:"legal_document_number"`
+		LegalDocumentNumber *string           `json:"legal_document_number" validate:"omitempty,min=3"`
 		Contacts            []contact         `json:"contacts"`
 		MerchantAccounts    []merchantAccount `json:"merchant_accounts"`
-		Country             *string           `json:"country"`
+		Country             *string           `json:"country" validate:"omitempty,min=2,max=2"` // TODO: realise why this field accept empty string, legal_document_number is equals and dont do it
 		UpdatedDate         *dateTime         `json:"updated_date"`
 		LastPaymentDate     *date             `json:"last_payment_date"`
-		BillingDay          *int              `json:"billing_day"`
+		BillingDay          *int              `json:"billing_day" validate:"omitempty,min=1,max=31"'`
 		IsActive            *bool             `json:"is_active" validate:"required"`
-		CreditLimit         *float32          `json:"credit_limit"`
+		CreditLimit         *float32          `json:"credit_limit" validate:"omitempty,min=100"'`
 	}
 )
 
@@ -40,7 +39,7 @@ func (acc *Account) Validate() (err error) {
 			details[vErr.Field()] = vErr.Value()
 		}
 
-		err = applicationerror.New(err.Error(), err, details)
+		err = apperror.New(err.Error(), err, details)
 	}
 
 	return

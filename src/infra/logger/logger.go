@@ -3,7 +3,7 @@ package logger
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
+	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
 	"time"
 )
 
@@ -21,9 +21,9 @@ func Info(msg string, data interface{}) {
 
 func Error(msg string, err error) {
 	switch err.(type) {
-	case *applicationerror.ApplicationError:
+	case *apperror.ApplicationError:
 		{
-			cErr := err.(*applicationerror.ApplicationError)
+			cErr := err.(*apperror.ApplicationError)
 			originErr := cErr.OriginalError()
 			details := cErr.Details()
 

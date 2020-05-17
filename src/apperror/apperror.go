@@ -1,4 +1,4 @@
-package applicationerror
+package apperror
 
 type ApplicationError struct {
 	message       string

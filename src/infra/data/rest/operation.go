@@ -3,7 +3,7 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
+	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +25,7 @@ func performGet(client http.Client, url string) (status int, data []byte, err er
 		logger.Info(fmt.Sprintf("success on call GET: %s - response status %d - %s", url, status, res.Status), nil)
 
 		if data, err = ioutil.ReadAll(res.Body); err != nil {
-			err = applicationerror.New("error on convert response body into bytes", err, nil)
+			err = apperror.New("error on convert response body into bytes", err, nil)
 		} else {
 			logger.Info("response data", string(data))
 		}

@@ -2,7 +2,7 @@ package tools
 
 import (
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
+	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
 	"strings"
 	"time"
 )
@@ -17,7 +17,7 @@ func ParseBytesToFormattedTime(data []byte, validFormats []string) (t time.Time,
 
 	if err != nil {
 		// TODO: improve valid formats details
-		err = applicationerror.New(fmt.Sprintf("error on parse %s into a formatted time. valid types into details", s),
+		err = apperror.New(fmt.Sprintf("error on parse %s into a formatted time. valid types into details", s),
 			err,
 			validFormats)
 	}
