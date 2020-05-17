@@ -7,16 +7,13 @@ import (
 )
 
 func main() {
-	var err error
 	if errsCh := loader.LoadApplication(); errsCh != nil {
 		logger.Info("application loaded", nil)
-		for err = range errsCh {
+		for err := range errsCh {
 			if err != nil {
-				break
+				logger.Info("exiting application with error", err)
+				os.Exit(1)
 			}
 		}
 	}
-
-	logger.Info("exiting application with error", err)
-	os.Exit(1)
 }

@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -77,23 +76,20 @@ type Config struct {
 
 var config *Config
 
-func Load(environment string) error {
-	if config != nil {
-		return errors.New("config is already loaded")
+func Load(environment string) (err error) {
+	if config == nil {
+		path, _ := filepath.Abs(fmt.Sprintf("config/%s.json", strings.ToLower(environment)))
+		var bytes []byte
+		bytes, err = ioutil.ReadFile(path)
+
+		if err == nil {
+			if err := json.Unmarshal(bytes, &config); err == nil {
+				config.Env = environment
+			}
+		}
 	}
 
-	path, _ := filepath.Abs(fmt.Sprintf("config/%s.json", strings.ToLower(environment)))
-	bytes, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(bytes, &config); err != nil {
-		return err
-	}
-
-	config.Env = environment
-
-	return nil
+	return
 }
 
 func Get() Config {

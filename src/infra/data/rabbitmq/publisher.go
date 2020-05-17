@@ -16,15 +16,22 @@ type rabbitPubInfo struct {
 func Publish(data []byte, topic string) (err error) {
 	pubInfo := newRabbitPubInfo(data, topic)
 
-	if rbCh, err := getChannel(); err == nil {
-		if qPub, err := rbCh.QueueDeclare(
+	var (
+		rbCh *amqp.Channel
+		qPub amqp.Queue
+	)
+
+	if rbCh, err = getChannel(); err == nil {
+		qPub, err = rbCh.QueueDeclare(
 			pubInfo.queue.Name,
 			pubInfo.queue.Durable,
 			pubInfo.queue.AutoDelete,
 			pubInfo.queue.Exclusive,
 			pubInfo.queue.NoWait,
 			pubInfo.queue.Args,
-		); err == nil {
+		)
+
+		if err == nil {
 			err = rbCh.Publish(
 				pubInfo.message.Exchange,
 				qPub.Name,
@@ -41,7 +48,7 @@ func Publish(data []byte, topic string) (err error) {
 		err = errors.New(msg)
 	}
 
-	return err
+	return
 }
 
 func newRabbitPubInfo(data []byte, topic string) rabbitPubInfo {

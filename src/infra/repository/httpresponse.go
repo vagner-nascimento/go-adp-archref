@@ -10,9 +10,10 @@ func isHttpResponseFailed(status int) bool {
 	return status >= http.StatusMultipleChoices || status < http.StatusOK
 }
 
-func handleNotfoundError(msg string, data []byte) error {
-	err := apperror.New(msg, nil, data)
+func handleNotfoundError(msg string, data []byte) (err error) {
+	err = apperror.New(msg, nil, data)
+
 	logger.Error(msg, err)
 
-	return err
+	return
 }

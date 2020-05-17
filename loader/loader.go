@@ -9,14 +9,14 @@ import (
 	"os"
 )
 
-func LoadApplication() <-chan error {
+func LoadApplication() (errs <-chan error) {
 	loadConfiguration()
 
 	if loadIntegration() {
-		return loadPresentation()
+		errs = loadPresentation()
 	}
 
-	return nil
+	return
 }
 
 func loadConfiguration() {
@@ -34,15 +34,16 @@ func loadConfiguration() {
 	logger.Info("configurations loaded", string(conf))
 }
 
-func loadIntegration() bool {
+func loadIntegration() (sucess bool) {
 	logger.Info("loading subscribers", nil)
 	if err := integration.SubscribeConsumers(); err != nil {
 		logger.Error("error subscribe consumers", err)
-		return false
 	} else {
 		logger.Info("consumers successfully subscribed", nil)
-		return true
+		sucess = true
 	}
+
+	return
 }
 
 func loadPresentation() <-chan error {

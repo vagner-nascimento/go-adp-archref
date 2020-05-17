@@ -12,7 +12,7 @@ type Client struct {
 	rejectOnUnauthorized bool
 }
 
-func (c *Client) GetMany(url string, params map[string]string) (status int, data []byte, err error) {
+func (c *Client) GetMany(url string, params map[string]string) (int, []byte, error) {
 	clearUrl(&url)
 
 	qParams := getQueryParams(params)
@@ -21,7 +21,7 @@ func (c *Client) GetMany(url string, params map[string]string) (status int, data
 	return performGet(c.httpClient, reqUrl)
 }
 
-func (c *Client) Get(url, id string) (status int, data []byte, err error) {
+func (c *Client) Get(url, id string) (int, []byte, error) {
 	clearUrl(&url)
 
 	path := url

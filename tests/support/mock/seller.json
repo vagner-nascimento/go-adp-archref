@@ -1,8 +1,8 @@
 {
-  "seller_id": "s_1",
+  "id": "s_1",
   "merchant_id": "m_1",
   "name": "Carmen Flower Seller",
-  "legal_document_number": "legal_doc_num",
+  "legal_document": "legal_doc_num",
   "last_payment_date": "2019-12-15",
   "is_active": true,
   "contacts": [

@@ -30,6 +30,7 @@ func Error(msg string, err error) {
 			if originErr == nil {
 				originErr = errors.New("none error")
 			}
+
 			if details == nil {
 				details = "none details"
 			}

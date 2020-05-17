@@ -25,6 +25,7 @@ func (es *merchantSub) GetHandler() func([]byte) {
 
 func newMerchantSub() repository.Subscription {
 	merchantConfig := config.Get().Integration.Amqp.Subs.Merchant
+
 	return &merchantSub{
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const maxDec = 2
+const maxDecimals = 2
 
 type money float64
 
@@ -19,9 +19,9 @@ func (m *money) UnmarshalJSON(b []byte) (err error) {
 
 		if len(split) == 2 {
 			dec := split[1]
-			if len(dec) > maxDec {
+			if len(dec) > maxDecimals {
 				// TODO: realise how to improve this error info with field name
-				err = errors.New(fmt.Sprintf("invalid value %f for monetary field. it accepts maximum of %d decimals", val, maxDec))
+				err = errors.New(fmt.Sprintf("invalid value %f for monetary field. it accepts maximum of %d decimals", val, maxDecimals))
 			}
 		}
 

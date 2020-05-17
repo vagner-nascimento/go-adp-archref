@@ -10,6 +10,7 @@ func MultiplexErrors(errsCh ...<-chan error) <-chan error {
 		for _, errCh := range errsCh {
 			go forwardError(errCh, uniqueCh, &closedChannels)
 		}
+
 		for {
 			if totalChannels == closedChannels {
 				break

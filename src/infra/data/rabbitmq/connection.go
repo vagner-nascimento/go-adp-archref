@@ -18,11 +18,14 @@ type connection struct {
 }
 
 func (rbConn *connection) isConnected() bool {
-	return singletonConn.conn != nil && !singletonConn.conn.IsClosed()
+	return rbConn.conn != nil && !rbConn.conn.IsClosed()
 }
 
 var singletonConn connection
 
+// ListenConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
+// The connection still alive even if it lost the connection. It will die only if all connection retries were failed.
+// When all reties fails, the channel is closed
 func ListenConnection(connStatus *chan bool) {
 	go func(chSt *chan bool) {
 		for singletonConn.isAlive {
@@ -32,27 +35,27 @@ func ListenConnection(connStatus *chan bool) {
 	}(connStatus)
 }
 
-func getChannel() (*amqp.Channel, error) {
-	var err error
+func getChannel() (ch *amqp.Channel, err error) {
 	singletonConn.connect.Do(func() {
 		singletonConn.isAlive = true
 		err = connect()
 	})
 
-	if err != nil {
-		return nil, err
-	} else if singletonConn.isConnected() {
-		return singletonConn.conn.Channel()
-	} else {
-		err = errors.New("rabbit connection is closed")
+	if err == nil {
+		if singletonConn.isConnected() {
+			ch, err = singletonConn.conn.Channel()
+		} else {
+			err = errors.New("rabbit connection is closed")
+		}
 	}
 
-	return nil, err
+	return
 }
 
 func connect() (err error) {
 	sleep := config.Get().Data.Amqp.ConnRetry.Sleep
 	maxTries := 1
+
 	if config.Get().Data.Amqp.ConnRetry.MaxTries != nil {
 		maxTries = *config.Get().Data.Amqp.ConnRetry.MaxTries
 	}
@@ -70,7 +73,9 @@ func connect() (err error) {
 
 			errs := make(chan *amqp.Error)
 			singletonConn.conn.NotifyClose(errs)
+
 			go reconnectOnClose(errs)
+
 			break
 		}
 	}
@@ -87,14 +92,14 @@ func connect() (err error) {
 		err = errors.New("an error occurred on try to connect into rabbit mq")
 	}
 
-	return err
+	return
 }
 
 func reconnectOnClose(errs chan *amqp.Error) {
 	for closeErr := range errs {
 		if closeErr != nil {
 			fmt.Println("rabbit mq connection was closed, error:", closeErr)
-			fmt.Println("trying to reconnecting into rabbit mq server...")
+			fmt.Println("trying to reconnect into rabbit mq server...")
 			go connect()
 			return
 		}

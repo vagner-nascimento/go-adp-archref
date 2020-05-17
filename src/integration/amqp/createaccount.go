@@ -7,15 +7,16 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 )
 
-func createAccount(data []byte) (newAcc *app.Account, err error) {
+func createAccount(data []byte) (acc *app.Account, err error) {
 	accAdp := app.NewAccountAdapter(repository.NewAccountRepository())
-	if newAcc, err = accAdp.AddAccount(data); err != nil {
+
+	if acc, err = accAdp.AddAccount(data); err != nil {
 		logger.Error("error on create a new Account", err)
-		newAcc = nil
+		acc = nil
 	} else {
-		bytes, _ := json.Marshal(newAcc)
+		bytes, _ := json.Marshal(acc)
 		logger.Info("new Account created", string(bytes))
 	}
 
-	return newAcc, err
+	return
 }

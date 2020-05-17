@@ -3,21 +3,18 @@
     {
       "id": "acc1_m_1",
       "merchant_id": "m_1",
-      "merchant_account_id": "acc1_m_1",
       "name": "Mer 1 Acc 1",
       "number": "444-5"
     },
     {
       "id": "acc2_m_1",
       "merchant_id": "m_1",
-      "merchant_account_id": "acc2_m_1",
       "name": "Mer 1 Acc 2",
       "number": "6577-92"
     },
     {
       "id": "acc1_m_2",
       "merchant_id": "m_2",
-      "merchant_account_id": "acc1_m_2",
       "name": "Mer 2 Acc 1",
       "number": "1118-01"
     }
@@ -25,13 +22,11 @@
   "merchants": [
     {
       "id": "m_1",
-      "merchant_id": "m_1",
       "name": "Carmen Flowers",
       "country": "US"
     },
     {
       "id": "m_2",
-      "merchant_id": "m_2",
       "name": "Center Shop",
       "country": "UK"
     }

@@ -5,18 +5,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func SubscribeConsumer(queueName string, consumerName string, handler func([]byte)) error {
-	rbChan, err := getChannel()
-	if err != nil {
-		return err
+func SubscribeConsumer(queueName string, consumerName string, handler func([]byte)) (err error) {
+	var rbChan *amqp.Channel
+	rbChan, err = getChannel()
+
+	if err == nil {
+		sub := newSubscriberInfo(queueName, consumerName, handler)
+		err = processMessages(rbChan, sub)
 	}
 
-	sub := newSubscriberInfo(queueName, consumerName, handler)
-	if err = processMessages(rbChan, sub); err != nil {
-		return err
-	}
-
-	return nil
+	return
 }
 
 func newSubscriberInfo(queueName string, consumerName string, handler func([]byte)) rabbitSubInfo {
@@ -39,8 +37,9 @@ func newSubscriberInfo(queueName string, consumerName string, handler func([]byt
 	}
 }
 
-func processMessages(ch *amqp.Channel, sub rabbitSubInfo) error {
-	q, err := ch.QueueDeclare(
+func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
+	var q amqp.Queue
+	q, err = ch.QueueDeclare(
 		sub.queue.Name,
 		sub.queue.Durable,
 		sub.queue.DeleteUnused,
@@ -48,29 +47,28 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) error {
 		sub.queue.NoWait,
 		sub.queue.Args,
 	)
-	if err != nil {
-		return err
-	}
 
-	msgs, err := ch.Consume(
-		q.Name,
-		sub.message.Consumer,
-		sub.message.AutoAct,
-		sub.message.Exclusive,
-		sub.message.Local,
-		sub.message.NoWait,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
+	if err == nil {
+		var msgs <-chan amqp.Delivery
+		msgs, err = ch.Consume(
+			q.Name,
+			sub.message.Consumer,
+			sub.message.AutoAct,
+			sub.message.Exclusive,
+			sub.message.Local,
+			sub.message.NoWait,
+			nil,
+		)
 
-	go func(queueName string, msgs <-chan amqp.Delivery) {
-		for msg := range msgs {
-			fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
-			sub.handler(msg.Body)
+		if err == nil {
+			go func(queueName string, msgs <-chan amqp.Delivery) {
+				for msg := range msgs {
+					fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
+					sub.handler(msg.Body)
+				}
+			}(q.Name, msgs)
 		}
-	}(q.Name, msgs)
+	}
 
-	return nil
+	return
 }

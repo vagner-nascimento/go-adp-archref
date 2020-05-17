@@ -12,6 +12,7 @@ func getQueryParams(params map[string]string) (qParams string) {
 			for key, val := range params {
 				res <- fmt.Sprintf("%s=%s", key, val)
 			}
+
 			close(res)
 		}(pResults)
 
@@ -21,5 +22,5 @@ func getQueryParams(params map[string]string) (qParams string) {
 		qParams = strings.TrimSuffix(qParams, "&")
 	}
 
-	return qParams
+	return
 }

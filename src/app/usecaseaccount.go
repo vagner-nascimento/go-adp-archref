@@ -2,7 +2,9 @@ package app
 
 func createAccount(data []byte) (acc *Account, err error) {
 	if acc, err = newAccount(data); err == nil {
-		err = acc.Validate()
+		if err = acc.validate(); err != nil {
+			acc = nil
+		}
 	}
 
 	return

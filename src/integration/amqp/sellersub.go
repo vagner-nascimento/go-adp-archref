@@ -25,6 +25,7 @@ func (es *sellerSub) GetHandler() func([]byte) {
 
 func newSellerSub() repository.Subscription {
 	sellerConfig := config.Get().Integration.Amqp.Subs.Seller
+
 	return &sellerSub{
 		topic:    sellerConfig.Topic,
 		consumer: sellerConfig.Consumer,

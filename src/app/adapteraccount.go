@@ -9,9 +9,9 @@ type AccountAdapter struct {
 	repo AccountDataHandler
 }
 
-func (aa *AccountAdapter) AddAccount(data []byte) (*Account, error) {
-	acc, err := createAccount(data)
-	if err == nil {
+func (aa *AccountAdapter) AddAccount(data []byte) (acc *Account, err error) {
+	if acc, err = createAccount(data); err == nil {
+		// TODO: maybe generator pattern could be used here
 		merEnrichErrs := make(chan error)
 		selEnrichErrs := make(chan error)
 
@@ -30,7 +30,7 @@ func (aa *AccountAdapter) AddAccount(data []byte) (*Account, error) {
 		}
 	}
 
-	return acc, err
+	return
 }
 
 func NewAccountAdapter(repo AccountDataHandler) AccountAdapter {
@@ -38,8 +38,8 @@ func NewAccountAdapter(repo AccountDataHandler) AccountAdapter {
 }
 
 func doMerchantAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan error) {
-	if acc.Type == accountTypeEnum.merchant {
-		if accountBytes, err := repo.GetMerchantAccounts(*acc.MerchantId); err != nil {
+	if acc.Type == getAccountType().merchant {
+		if accountBytes, err := repo.GetMerchantAccounts(acc.Id); err != nil {
 			errCh <- err
 		} else if mAccounts, err := createMerchantAccounts(accountBytes); err != nil {
 			errCh <- err
@@ -52,7 +52,7 @@ func doMerchantAccountEnrichment(acc *Account, repo AccountDataHandler, errCh ch
 }
 
 func doSellerAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan error) {
-	if acc.Type == accountTypeEnum.seller {
+	if acc.Type == getAccountType().seller {
 		if merchantBytes, err := repo.GetMerchant(*acc.MerchantId); err != nil {
 			errCh <- err
 		} else if m, err := createMerchant(merchantBytes); err != nil {

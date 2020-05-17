@@ -19,23 +19,22 @@ type accountRepository struct {
 	merchantsCli   *rest.Client
 }
 
-func (repo *accountRepository) Save(account *app.Account) (err error) {
+func (repo *accountRepository) Save(account *app.Account) error {
 	if bytes, err := json.Marshal(account); err == nil {
-		err = rabbitmq.Publish(bytes, repo.topic)
+		return rabbitmq.Publish(bytes, repo.topic)
 	} else {
-		err = apperror.New("error on convert account's interface into bytes", err, nil)
+		return apperror.New("error on convert account's interface into bytes", err, nil)
 	}
-
-	return err
 }
 
 func (repo *accountRepository) GetMerchantAccounts(merchantId string) (data []byte, err error) {
-	status, data, err := repo.merchantAccCli.GetMany("", map[string]string{"merchant_id": merchantId})
+	status, data, gErr := repo.merchantAccCli.GetMany("", map[string]string{"merchant_id": merchantId})
 	msg := "error on try to get Merchant Accounts"
 
-	if err != nil {
-		logger.Error(msg, err)
+	if gErr != nil {
+		logger.Error(msg, gErr)
 		err = errors.New(msg)
+		return
 	}
 
 	if isHttpResponseFailed(status) {
@@ -45,19 +44,21 @@ func (repo *accountRepository) GetMerchantAccounts(merchantId string) (data []by
 			err = apperror.New(msg, nil, data)
 			logger.Error(msg, err)
 		}
+
 		data = nil
 	}
 
-	return data, err
+	return
 }
 
 func (repo *accountRepository) GetMerchant(merchantId string) (data []byte, err error) {
-	status, data, err := repo.merchantsCli.Get("", merchantId)
+	status, data, gErr := repo.merchantsCli.Get("", merchantId)
 	msg := "error on try to get Merchant"
 
-	if err != nil {
-		logger.Error(msg, err)
+	if gErr != nil {
+		logger.Error(msg, gErr)
 		err = errors.New(msg)
+		return
 	}
 
 	if isHttpResponseFailed(status) {
@@ -67,10 +68,11 @@ func (repo *accountRepository) GetMerchant(merchantId string) (data []byte, err 
 			err = apperror.New(msg, nil, data)
 			logger.Error(msg, err)
 		}
+
 		data = nil
 	}
 
-	return data, err
+	return
 }
 
 func NewAccountRepository() *accountRepository {

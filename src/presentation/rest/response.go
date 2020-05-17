@@ -13,8 +13,7 @@ func writeOkResponse(w http.ResponseWriter, data interface{}) {
 }
 
 func getHealthResponseData() map[string]string {
-	data := make(map[string]string)
-	data["status"] = "UP"
-
-	return data
+	return map[string]string{
+		"status": "UP",
+	}
 }
