@@ -16,7 +16,7 @@ services:
     networks:
       - go-network
     command: >
-      bash -c "/scripts/wait-for-it.sh -t 8 go-rabbit-mq:5672 -- /app/main"
+      bash -c "/scripts/wait-for-it.sh -s -t 10 go-rabbit-mq:5672 -- /app/main"
 
   go-rabbit-mq:
     container_name: go-rabbit-mq

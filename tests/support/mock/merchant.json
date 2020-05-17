@@ -1,19 +1,9 @@
-[
-  {
-    "merchant_id": "m_1",
-    "name": "Carmen Flowers",
-    "country": "US",
-    "updated_date": "2020-04-15T18:57:29",
-    "billing_day": 12,
-    "is_active": true,
-    "credit_limit": 1200.42
-  },
-  {
-    "merchant_id": "m_2",
-    "name": "Center Shop",
-    "country": "UK",
-    "updated_date": "2019-09-05 00:00",
-    "billing_day": 5,
-    "is_active": false
-  }
-]
+{
+  "merchant_id": "m_1",
+  "name": "Carmen Flowers",
+  "country": "US",
+  "updated_date": "2020-04-15T18:57:29",
+  "billing_day": 12,
+  "is_active": true,
+  "credit_limit": 1200.42
+}

@@ -19,8 +19,8 @@ var validDateTimeFormats = []string{
 }
 
 func (dt *dateTime) UnmarshalJSON(b []byte) error {
-	var err error
-	if t, err := tools.ParseBytesToFormattedTime(b, validDateTimeFormats); err == nil {
+	t, err := tools.ParseBytesToFormattedTime(b, validDateTimeFormats)
+	if err == nil {
 		*dt = dateTime(t)
 	}
 

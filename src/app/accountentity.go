@@ -12,7 +12,7 @@ type (
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	}
-	// TODO: realise how to validate only if is not null on optionals
+	// TODO: realise how to validate optionals only if is informed
 	// TODO: float32: make don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
@@ -31,32 +31,31 @@ type (
 	}
 )
 
-func (acc *Account) Validate() (errs validator.ValidationErrors) {
+func (acc *Account) Validate() (err error) {
 	v := validator.New()
+	if err = v.Struct(*acc); err != nil {
+		details := make(map[string]interface{})
+		// TODO: improve detail messages
+		for _, vErr := range err.(validator.ValidationErrors) {
+			details[vErr.Field()] = vErr.Value()
+		}
 
-	if err := v.Struct(*acc); err != nil {
-		errs = err.(validator.ValidationErrors)
+		err = applicationerror.New(err.Error(), err, details)
 	}
 
-	return errs
+	return
 }
 
 func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
 	acc.MerchantAccounts = append(acc.MerchantAccounts, merAccounts)
 }
 
-func newAccount(data []byte) (*Account, error) {
-	var acc Account
-	if err := json.Unmarshal(data, &acc); err != nil {
-		return nil, applicationerror.New("cannot convert data into an Account", err, nil)
+func newAccount(data []byte) (acc *Account, err error) {
+	if err = json.Unmarshal(data, &acc); err == nil {
+		assertAccountData(acc)
 	}
 
-	assertAccountData(&acc)
-	if err := acc.Validate(); err != nil {
-		return nil, err
-	}
-
-	return &acc, nil
+	return
 }
 
 func assertAccountData(acc *Account) {

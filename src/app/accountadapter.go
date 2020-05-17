@@ -9,8 +9,9 @@ type AccountAdapter struct {
 	repo AccountDataHandler
 }
 
-func (aa *AccountAdapter) AddAccount(data []byte) (acc *Account, err error) {
-	if acc, err = createAccount(data); err == nil {
+func (aa *AccountAdapter) AddAccount(data []byte) (*Account, error) {
+	acc, err := createAccount(data)
+	if err == nil {
 		merEnrichErrs := make(chan error)
 		selEnrichErrs := make(chan error)
 
@@ -29,7 +30,7 @@ func (aa *AccountAdapter) AddAccount(data []byte) (acc *Account, err error) {
 		}
 	}
 
-	return
+	return acc, err
 }
 
 func NewAccountAdapter(repo AccountDataHandler) AccountAdapter {
