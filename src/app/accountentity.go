@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/vagner-nascimento/go-adp-bridge/src/applicationerror"
 )
 
 type (
@@ -30,32 +31,31 @@ type (
 	}
 )
 
-func (acc *Account) Validate() validator.ValidationErrors {
+func (acc *Account) Validate() (err error) {
 	v := validator.New()
+	if err = v.Struct(*acc); err != nil {
+		details := make(map[string]interface{})
+		// TODO: improve detail messages
+		for _, vErr := range err.(validator.ValidationErrors) {
+			details[vErr.Field()] = vErr.Value()
+		}
 
-	if err := v.Struct(*acc); err != nil {
-		return err.(validator.ValidationErrors)
+		err = applicationerror.New(err.Error(), err, details)
 	}
 
-	return nil
+	return
 }
 
 func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
 	acc.MerchantAccounts = append(acc.MerchantAccounts, merAccounts)
 }
 
-func newAccount(data []byte) (*Account, error) {
-	var (
-		acc Account
-		err error
-	)
+func newAccount(data []byte) (acc *Account, err error) {
 	if err = json.Unmarshal(data, &acc); err == nil {
-		assertAccountData(&acc)
-		// TODO: realise why this fucking shit validation error can't be checked nil as a normal error
-		err = acc.Validate()
+		assertAccountData(acc)
 	}
 
-	return &acc, err
+	return
 }
 
 func assertAccountData(acc *Account) {
