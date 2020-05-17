@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
+	"github.com/vagner-nascimento/go-adp-bridge/src/appvalidator"
 )
 
 type (
@@ -12,7 +13,6 @@ type (
 		Phone string `json:"phone"`
 		Email string `json:"email"`
 	}
-	// TODO: float32: make don't accept more than 2 decimals (after comma)
 	Account struct {
 		Type                string            `json:"type" validate:"required,min=6,max=8"`
 		MerchantId          *string           `json:"merchant_id"`
@@ -26,12 +26,13 @@ type (
 		LastPaymentDate     *date             `json:"last_payment_date"`
 		BillingDay          *int              `json:"billing_day" validate:"omitempty,min=1,max=31"'`
 		IsActive            *bool             `json:"is_active" validate:"required"`
-		CreditLimit         *float32          `json:"credit_limit" validate:"omitempty,min=100"'`
+		CreditLimit         *money            `json:"credit_limit" validate:"omitempty,min=100"'`
 	}
 )
 
 func (acc *Account) Validate() (err error) {
-	v := validator.New()
+	v := appvalidator.NewValidate()
+
 	if err = v.Struct(*acc); err != nil {
 		details := make(map[string]interface{})
 		// TODO: improve detail messages
