@@ -1,13 +1,7 @@
 package app
 
-func createAccount(data []byte) (acc *Account, err error) {
-	if acc, err = newAccount(data); err == nil {
-		if err = acc.validate(); err != nil {
-			acc = nil
-		}
-	}
-
-	return
+func createAccount(data []byte) (*Account, error) {
+	return newAccount(data)
 }
 
 func enrichMerchantAccount(acc *Account, mAccounts []merchantAccount) {

@@ -2,9 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
-	"github.com/vagner-nascimento/go-adp-bridge/src/appvalidator"
 )
 
 type (
@@ -33,21 +30,6 @@ type (
 		seller   string
 	}
 )
-
-func (acc *Account) validate() (err error) {
-	v := appvalidator.NewValidate()
-	if err = v.Struct(*acc); err != nil {
-		details := make(map[string]interface{})
-		// TODO: improve detail messages
-		for _, vErr := range err.(validator.ValidationErrors) {
-			details[vErr.Field()] = vErr.Value()
-		}
-
-		err = apperror.New(err.Error(), err, details)
-	}
-
-	return
-}
 
 func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
 	acc.MerchantAccounts = append(acc.MerchantAccounts, merAccounts)
