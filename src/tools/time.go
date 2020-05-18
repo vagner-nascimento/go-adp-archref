@@ -16,10 +16,9 @@ func ParseBytesToFormattedTime(data []byte, validFormats []string) (t time.Time,
 	}
 
 	if err != nil {
-		// TODO: improve valid formats details
-		err = apperror.New(fmt.Sprintf("error on parse %s into a formatted time. valid types into details", s),
-			err,
-			validFormats)
+		msg := fmt.Sprintf("error on parse %s into a formatted time", s)
+		details := fmt.Sprintf("%s:\n%s", "valid formats", strings.Join(validFormats, "\n"))
+		err = apperror.New(msg, err, details)
 	}
 
 	return

@@ -11,19 +11,19 @@ type (
 		Email string `json:"email"`
 	}
 	Account struct {
-		Type             string            `json:"type" validate:"required,min=6,max=8"`
-		Id               string            `json:"id" validate:"required,min=1,max=100"`
-		MerchantId       *string           `json:"merchant_id" validate:"omitempty,min=1,max=100"`
-		Name             string            `json:"name" validate:"required,min=3,max=150"`
-		LegalDocument    *string           `json:"legal_document" validate:"omitempty,min=3"`
+		Type             string            `json:"type"`
+		Id               string            `json:"id"`
+		MerchantId       *string           `json:"merchant_id"`
+		Name             string            `json:"name"`
+		LegalDocument    *string           `json:"legal_document"`
 		Contacts         []contact         `json:"contacts"`
 		MerchantAccounts []merchantAccount `json:"merchant_accounts"`
-		Country          *string           `json:"country" validate:"omitempty,min=2,max=2"` // TODO: realise why this field accept empty string, legal_document_number is equals and dont do it
-		UpdatedDate      *dateTime         `json:"updated_date"`
+		Country          *string           `json:"country"`
+		UpdatedDate      dateTime          `json:"updated_date"`
 		LastPaymentDate  *date             `json:"last_payment_date"`
-		BillingDay       *int              `json:"billing_day" validate:"omitempty,min=1,max=31"'`
-		IsActive         *bool             `json:"is_active" validate:"required"`
-		CreditLimit      *money            `json:"credit_limit" validate:"omitempty,min=100"'`
+		BillingDay       *int              `json:"billing_day"`
+		IsActive         bool              `json:"is_active"`
+		CreditLimit      *money            `json:"credit_limit"`
 	}
 	accountType struct {
 		merchant string

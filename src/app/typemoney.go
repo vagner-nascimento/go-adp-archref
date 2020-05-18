@@ -20,8 +20,7 @@ func (m *money) UnmarshalJSON(b []byte) (err error) {
 		if len(split) == 2 {
 			dec := split[1]
 			if len(dec) > maxDecimals {
-				// TODO: realise how to improve this error info with field name
-				err = errors.New(fmt.Sprintf("invalid value %f for monetary field. it accepts maximum of %d decimals", val, maxDecimals))
+				err = errors.New(fmt.Sprintf("invalid value %s for monetary field. maximum decimals accepted: %d", s, maxDecimals))
 			}
 		}
 
