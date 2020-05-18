@@ -84,7 +84,7 @@ func connect() (err error) {
 		msg := "error on connect into rabbit mq"
 		singletonConn.isAlive = false
 		if config.Get().Data.Amqp.ExitOnLostConnection {
-			logger.Error(fmt.Sprintf("%s - exiting application after %s retires with error", msg, maxTries), err)
+			logger.Error(fmt.Sprintf("%s - exiting application after %d retires with error", msg, maxTries), err)
 			os.Exit(1)
 		}
 

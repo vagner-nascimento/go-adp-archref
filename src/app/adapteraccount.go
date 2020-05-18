@@ -11,14 +11,11 @@ type AccountAdapter struct {
 
 func (aa *AccountAdapter) AddAccount(data []byte) (acc *Account, err error) {
 	if acc, err = createAccount(data); err == nil {
-		// TODO: maybe generator pattern could be used here
-		merEnrichErrs := make(chan error)
-		selEnrichErrs := make(chan error)
+		enrichErrs := channel.MultiplexErrors(
+			doMerchantAccountEnrichment(acc, aa.repo),
+			doSellerAccountEnrichment(acc, aa.repo),
+		)
 
-		go doMerchantAccountEnrichment(acc, aa.repo, merEnrichErrs)
-		go doSellerAccountEnrichment(acc, aa.repo, selEnrichErrs)
-
-		enrichErrs := channel.MultiplexErrors(merEnrichErrs, selEnrichErrs)
 		for cErr := range enrichErrs {
 			if cErr != nil {
 				logger.Error("error on account enrichment", cErr)
@@ -37,30 +34,42 @@ func NewAccountAdapter(repo AccountDataHandler) AccountAdapter {
 	return AccountAdapter{repo: repo}
 }
 
-func doMerchantAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan error) {
-	if acc.Type == getAccountType().merchant {
-		if accountBytes, err := repo.GetMerchantAccounts(acc.Id); err != nil {
-			errCh <- err
-		} else if mAccounts, err := createMerchantAccounts(accountBytes); err != nil {
-			errCh <- err
-		} else {
-			enrichMerchantAccount(acc, mAccounts)
-		}
-	}
+func doMerchantAccountEnrichment(acc *Account, repo AccountDataHandler) <-chan error {
+	ch := make(chan error)
 
-	close(errCh)
+	go func() {
+		if acc.Type == getAccountType().merchant {
+			if accountBytes, err := repo.GetMerchantAccounts(acc.Id); err != nil {
+				ch <- err
+			} else if mAccounts, err := createMerchantAccounts(accountBytes); err != nil {
+				ch <- err
+			} else {
+				enrichMerchantAccount(acc, mAccounts)
+			}
+		}
+
+		close(ch)
+	}()
+
+	return ch
 }
 
-func doSellerAccountEnrichment(acc *Account, repo AccountDataHandler, errCh chan error) {
-	if acc.Type == getAccountType().seller {
-		if merchantBytes, err := repo.GetMerchant(*acc.MerchantId); err != nil {
-			errCh <- err
-		} else if m, err := createMerchant(merchantBytes); err != nil {
-			errCh <- err
-		} else {
-			enrichSellerAccount(acc, m)
-		}
-	}
+func doSellerAccountEnrichment(acc *Account, repo AccountDataHandler) <-chan error {
+	ch := make(chan error)
 
-	close(errCh)
+	go func() {
+		if acc.Type == getAccountType().seller {
+			if merchantBytes, err := repo.GetMerchant(*acc.MerchantId); err != nil {
+				ch <- err
+			} else if m, err := createMerchant(merchantBytes); err != nil {
+				ch <- err
+			} else {
+				enrichSellerAccount(acc, m)
+			}
+		}
+
+		close(ch)
+	}()
+
+	return ch
 }

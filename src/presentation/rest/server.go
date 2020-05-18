@@ -17,14 +17,14 @@ func StartRestServer(errsCh chan error) {
 		r.Mount("/", newHealthRoutes())
 	})
 
+	var availableRoutes string
 	walkThroughRoutes := func(
 		method string,
 		route string,
 		handler http.Handler,
 		middleware ...func(http.Handler) http.Handler,
 	) error {
-		route = strings.Replace(route, "/*/", "/", -1)
-		logger.Info(fmt.Sprintf("%s %s", method, route), nil)
+		availableRoutes += fmt.Sprintf("\n%s %s", method, strings.Replace(route, "/*/", "/", -1))
 
 		return nil
 	}
@@ -33,6 +33,8 @@ func StartRestServer(errsCh chan error) {
 		logger.Error("error on verify rest routes", err)
 		errsCh <- apperror.New("an error occurred on try to start rest server", err, nil)
 	} else {
+		logger.Info("available rest routes:", availableRoutes)
+
 		port := config.Get().Presentation.Web.Port
 		logger.Info("starting rest server at port", port)
 
