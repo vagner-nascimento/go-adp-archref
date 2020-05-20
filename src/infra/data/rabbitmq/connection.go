@@ -13,6 +13,7 @@ import (
 
 type connection struct {
 	conn    *amqp.Connection
+	ch      *amqp.Channel
 	connect sync.Once
 	isAlive bool
 }
@@ -35,21 +36,49 @@ func ListenConnection(connStatus *chan bool) {
 	}(connStatus)
 }
 
-func getChannel() (ch *amqp.Channel, err error) {
+func getChannel() (*amqp.Channel, error) {
+	var err error
+
 	singletonConn.connect.Do(func() {
 		singletonConn.isAlive = true
 		err = connect()
+
+		if err == nil && singletonConn.isConnected() {
+			if singletonConn.ch, err = singletonConn.conn.Channel(); err == nil {
+				errs := make(chan *amqp.Error)
+				errs = singletonConn.ch.NotifyClose(errs)
+				go renewChannelOnClose(errs)
+			}
+		}
 	})
 
-	if err == nil {
-		if singletonConn.isConnected() {
-			ch, err = singletonConn.conn.Channel()
-		} else {
-			err = errors.New("rabbit connection is closed")
-		}
+	if err == nil && !singletonConn.isConnected() {
+		err = errors.New("rabbit connection is closed")
 	}
 
-	return
+	return singletonConn.ch, err
+}
+
+func renewChannelOnClose(errs chan *amqp.Error) {
+	for err := range errs {
+		if err != nil {
+			for singletonConn.isAlive {
+				if singletonConn.isConnected() {
+					var cErr error
+					if singletonConn.ch, cErr = singletonConn.conn.Channel(); cErr == nil {
+						cErrs := make(chan *amqp.Error)
+						cErrs = singletonConn.ch.NotifyClose(cErrs)
+						go renewChannelOnClose(cErrs)
+						return
+					} else {
+						// TODO: realise what to do in this case
+						logger.Error("error try to get a new channel on rabbit mq server", cErr)
+						return
+					}
+				}
+			}
+		}
+	}
 }
 
 func connect() (err error) {
