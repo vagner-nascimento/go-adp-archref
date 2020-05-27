@@ -11,7 +11,7 @@ import (
 )
 
 // TODO: write on README: to run stress test on docker-compose run: docker-compose -f compose-stress.yml up --build
-
+// TODO: improve test to count messages and time of end of publishing into accounts topic
 func main() {
 	// Results:
 	// - Locally: maximum 5k
