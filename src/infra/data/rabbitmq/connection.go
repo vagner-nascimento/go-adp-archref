@@ -13,7 +13,6 @@ import (
 
 type connection struct {
 	conn    *amqp.Connection
-	ch      *amqp.Channel
 	connect sync.Once
 	isAlive bool
 }
@@ -27,58 +26,32 @@ var singletonConn connection
 // ListenConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
 // The connection still alive even if it lost the connection. It will die only if all connection retries were failed.
 // When all reties fails, the channel is closed
-func ListenConnection(connStatus *chan bool) {
-	go func(chSt *chan bool) {
+func ListenConnection() <-chan bool {
+	status := make(chan bool)
+
+	go func() {
 		for singletonConn.isAlive {
-			*chSt <- singletonConn.isConnected()
+			status <- singletonConn.isConnected()
 		}
-		close(*chSt)
-	}(connStatus)
+		close(status)
+	}()
+
+	return status
 }
 
-func getChannel() (*amqp.Channel, error) {
-	var err error
-
+func newChannel() (ch *amqp.Channel, err error) {
 	singletonConn.connect.Do(func() {
 		singletonConn.isAlive = true
 		err = connect()
-
-		if err == nil && singletonConn.isConnected() {
-			if singletonConn.ch, err = singletonConn.conn.Channel(); err == nil {
-				errs := make(chan *amqp.Error)
-				errs = singletonConn.ch.NotifyClose(errs)
-				go renewChannelOnClose(errs)
-			}
-		}
 	})
 
-	if err == nil && !singletonConn.isConnected() {
+	if err == nil && singletonConn.isConnected() {
+		ch, err = singletonConn.conn.Channel()
+	} else {
 		err = errors.New("rabbit connection is closed")
 	}
 
-	return singletonConn.ch, err
-}
-
-func renewChannelOnClose(errs chan *amqp.Error) {
-	for err := range errs {
-		if err != nil {
-			for singletonConn.isAlive {
-				if singletonConn.isConnected() {
-					var cErr error
-					if singletonConn.ch, cErr = singletonConn.conn.Channel(); cErr == nil {
-						cErrs := make(chan *amqp.Error)
-						cErrs = singletonConn.ch.NotifyClose(cErrs)
-						go renewChannelOnClose(cErrs)
-						return
-					} else {
-						// TODO: realise what to do in this case
-						logger.Error("error try to get a new channel on rabbit mq server", cErr)
-						return
-					}
-				}
-			}
-		}
-	}
+	return
 }
 
 func connect() (err error) {

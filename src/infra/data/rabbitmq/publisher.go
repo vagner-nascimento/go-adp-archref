@@ -21,7 +21,9 @@ func Publish(data []byte, topic string) (err error) {
 		qPub amqp.Queue
 	)
 
-	if rbCh, err = getChannel(); err == nil {
+	if rbCh, err = newChannel(); err == nil {
+		defer rbCh.Close()
+
 		qPub, err = rbCh.QueueDeclare(
 			pubInfo.queue.Name,
 			pubInfo.queue.Durable,

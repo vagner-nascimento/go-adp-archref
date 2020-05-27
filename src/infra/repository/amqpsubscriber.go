@@ -17,16 +17,15 @@ type Subscription interface {
 // while it is not lost forever (connection is lost forever when cannot reconnect on retry parameters limits)
 func SubscribeAll(subs []Subscription) (err error) {
 	if err = subscribeConsumers(subs); err == nil {
-		connStatus := make(chan bool)
-		rabbitmq.ListenConnection(&connStatus)
+		connStatus := rabbitmq.ListenConnection()
 
-		go func(subs []Subscription, connStatus *chan bool) {
-			for isConnected := range *connStatus {
+		go func() {
+			for isConnected := range connStatus {
 				if !isConnected {
 					subscribeAllWhenReestablishConnection(connStatus, subs)
 				}
 			}
-		}(subs, &connStatus)
+		}()
 	}
 
 	return
@@ -50,8 +49,8 @@ func subscribeConsumers(subs []Subscription) (err error) {
 	return
 }
 
-func subscribeAllWhenReestablishConnection(connStatus *chan bool, subs []Subscription) {
-	for isConnected := range *connStatus {
+func subscribeAllWhenReestablishConnection(connStatus <-chan bool, subs []Subscription) {
+	for isConnected := range connStatus {
 		if isConnected {
 			if err := subscribeConsumers(subs); err != nil {
 				logger.Error("error try to re-subscribe consumers", err)

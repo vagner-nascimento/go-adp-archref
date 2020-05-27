@@ -7,7 +7,7 @@ import (
 
 func SubscribeConsumer(queueName string, consumerName string, handler func([]byte)) (err error) {
 	var rbChan *amqp.Channel
-	rbChan, err = getChannel()
+	rbChan, err = newChannel()
 
 	if err == nil {
 		sub := newSubscriberInfo(queueName, consumerName, handler)

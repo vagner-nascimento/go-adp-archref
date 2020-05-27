@@ -1,0 +1,20 @@
+{
+  "id": "s_1",
+  "merchant_id": "m_1",
+  "name": "Carmen Flower Seller",
+  "legal_document": "legal_doc_num",
+  "last_payment_date": "2019-12-15",
+  "is_active": true,
+  "contacts": [
+    {
+      "name": "Sell_cont1",
+      "phone": "5551888999777",
+      "email": "cont1@gmail.com"
+    },
+    {
+      "name": "Sell_cont2",
+      "phone": "5551444555888",
+      "email": "cont2@gmail.com"
+    }
+  ]
+}
