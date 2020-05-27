@@ -1,7 +1,7 @@
-# go-adp-bridge
-A Golang bridge adapter.
+# go-enriching-adp
+A Golang enriching adapter.
 
-This kind of adapter act like a bridge between topics, subscribing in one or N topics, transforming data and publishing it into another topic(s). Optionally, it can call http clients to enrich the original data.
+This kind of adapter receives data from topics or queues (one or many), transform the data and publishing it into another topics or queues (one or many). Usually it call other sources of data (like other http clients) to enrich the original data.
 
 # run whole app on docker
 1) if you don't have yet, install the docker and docker-compose (links bellow)
