@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// TODO: write on README: to run stress test on docker-compose run: docker-compose -f compose-stress.yml up --build
+// TODO: write on README: to run stress test on docker-compose run: docker-compose -f compose-stress.yml up --build -d
 // TODO: improve test to count messages and time of end of publishing into accounts topic
 func main() {
 	// Results:

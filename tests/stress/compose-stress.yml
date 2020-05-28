@@ -1,6 +1,20 @@
 version: '3.7'
 
 services:
+  go-stress-test:
+    container_name: go-stress-test
+    build:
+      context: .
+      dockerfile: StressTestDockerFile
+    depends_on:
+      - go-rabbit-mq
+    environment:
+      - GO_ENV=docker
+    networks:
+      - go-network
+    command: >
+      bash -c "/scripts/wait-for-it.sh -s -t 30 go-rabbit-mq:5672 -- /app/main"
+
   go-app:
     container_name: go-app
     build:
@@ -16,7 +30,7 @@ services:
     networks:
       - go-network
     command: >
-      bash -c "/scripts/wait-for-it.sh -s -t 10 go-rabbit-mq:5672 -- /app/main"
+      bash -c "/scripts/wait-for-it.sh -s -t 30 go-rabbit-mq:5672 -- /app/main"
 
   go-rabbit-mq:
     container_name: go-rabbit-mq
@@ -40,19 +54,6 @@ services:
     restart: unless-stopped
     networks:
       - go-network
-
-  go-stress-test:
-    container_name: go-stress-test
-    build:
-      context: .
-      dockerfile: StressTestDockerFile
-    depends_on:
-      - go-app
-    environment:
-      - GO_ENV=docker
-    networks:
-      - go-network
-    command: /app/main
 
 volumes:
   rabitmq:

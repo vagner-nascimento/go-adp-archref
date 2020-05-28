@@ -1,8 +1,5 @@
 FROM golang:alpine
 
-# Install bash to use on docker compose commands
-RUN apk update && apk add bash
-
 # Set golang env variables
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -14,8 +11,12 @@ WORKDIR /build
 
 COPY . .
 
+# Build app
 RUN go mod download
 RUN go build -o main .
+
+# Install bash to wait-for-it script
+RUN apk update && apk add bash
 
 # Move app startup script to its properly folder
 RUN mkdir /scripts
