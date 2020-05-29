@@ -22,8 +22,9 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 # run stress tests
 1) go to "tests" folder
 2) open the file "compose-stress.yml" and, into "go-stress-test" service, set "QTD_SELL" (quantity of sellers event to send), "QTD_MERCH" (quantity of merchants event to send) and "MINUTES_TIMEOUT" (timeout to complete test) 
-3) save and run the command docker-compose -f compose-stress.yml up --build
-4) go to http://localhost:15672/#/queues/ and check if all messages are into "q-accounts" queue
+3) save and run this command to start tests: docker-compose -f compose-stress.yml up --build -d
+4) when the terminal was free, run this command to watch tests results: docker logs go-stress-test --follow
+5) you can also access http://localhost:15672/#/queues/ to check the rabbit mq queues
 
 # application health check routes
 Once running, you can call http://localhos:3000/live (also /health and /ready) to check the app status
