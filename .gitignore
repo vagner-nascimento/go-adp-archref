@@ -23,3 +23,6 @@ test*.go
 
 # Go compiled app files
 main
+
+# Gosth mock folder (i don't know from where it came, it keep returning even deleting it)
+tests/mock
