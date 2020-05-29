@@ -6,32 +6,83 @@ import (
 	"github.com/streadway/amqp"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
-// TODO: write on README: to run stress test on docker-compose run: docker-compose -f compose-stress.yml up --build -d
-// TODO: improve test to count messages and time of end of publishing into accounts topic
+var (
+	qtdSellers   int
+	qtdMerchants int
+	testTimeOut  time.Duration
+)
+
+func setTestParams() {
+	// default params
+	qtdSellers = 400
+	qtdMerchants = 400
+	minutes := 1
+
+	// env params
+	if qtd := os.Getenv("QTD_SELL"); len(qtd) > 0 {
+		qtdSellers, _ = strconv.Atoi(qtd)
+	}
+	if qtd := os.Getenv("QTD_MERCH"); len(qtd) > 0 {
+		qtdMerchants, _ = strconv.Atoi(qtd)
+	}
+	if t := os.Getenv("MINUTES_TIMEOUT"); len(t) > 0 {
+		minutes, _ = strconv.Atoi(t)
+	}
+
+	testTimeOut = time.Minute * time.Duration(minutes)
+}
+
 func main() {
-	// Results:
-	// - Locally: maximum 5k
-	// - Docker: 100k or more
+	if err, consumed := consumeAccounts(); err == nil {
+		setTestParams()
 
-	errs := multiplexErrors(
-		pubMerchants(50000),
-		pubSellers(50000),
-	)
+		start := time.Now()
+		errs := multiplexErrors(
+			pubMerchants(qtdMerchants),
+			pubSellers(qtdSellers),
+		)
 
-	for err := range errs {
-		if err != nil {
-			fmt.Println("pub err:", err)
+		for err := range errs {
+			if err != nil {
+				fmt.Println("pub err")
+				panic(err)
+			}
 		}
+
+		totalSent := qtdSellers + qtdMerchants
+		success := false
+		timeLimit := time.Now().Add(testTimeOut)
+
+		fmt.Println("waiting for accounts consume")
+
+		for time.Now().Before(timeLimit) {
+			if *consumed == totalSent {
+				success = true
+				break
+			}
+		}
+
+		if success {
+			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
+			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
+		} else {
+			fmt.Println("TEST FAILED")
+			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
+		}
+	} else {
+		fmt.Println("error on consume q-accounts", err)
 	}
 
 	os.Exit(1)
 }
 
-// Support channel functions
+// Channel multiplexer
 func multiplexErrors(errsCh ...<-chan error) <-chan error {
 	uniqueCh := make(chan error)
 
@@ -63,8 +114,7 @@ func forwardError(from <-chan error, to chan error, closedChannels *int) {
 	*closedChannels++
 }
 
-// end Support channel functions
-
+// AMQP
 type connection struct {
 	conn    *amqp.Connection
 	connect sync.Once
@@ -87,14 +137,12 @@ func newChannel() (*amqp.Channel, error) {
 			url = "amqp://guest:guest@localhost:5672"
 		}
 
-		fmt.Println("RABBIT MQ URL", url)
-
 		singletonConn.conn, err = amqp.Dial(url)
 	})
 
 	if err == nil {
 		if singletonConn.conn == nil || singletonConn.conn.IsClosed() {
-			err = errors.New("rabbit connection is closed")
+			panic("rabbit connection is closed")
 		} else {
 			ch, err = singletonConn.conn.Channel()
 		}
@@ -143,7 +191,7 @@ func pubMerchants(qtd int) <-chan error {
 	errs := make(chan error)
 
 	go func() {
-		json, err := os.Open("./mock/merchant.json")
+		json, err := os.Open("./support/mock/merchant.json")
 		if err == nil {
 			defer json.Close()
 
@@ -170,7 +218,7 @@ func pubSellers(qtd int) <-chan error {
 	errs := make(chan error)
 
 	go func() {
-		json, err := os.Open("./mock/seller.json")
+		json, err := os.Open("./support/mock/seller.json")
 		if err == nil {
 			defer json.Close()
 
@@ -193,4 +241,48 @@ func pubSellers(qtd int) <-chan error {
 	}()
 
 	return errs
+}
+
+func consumeAccounts() (error, *int) {
+	var (
+		ch        *amqp.Channel
+		processed int
+		err       error
+	)
+
+	if ch, err = newChannel(); err == nil {
+		var q amqp.Queue
+		q, err = ch.QueueDeclare(
+			"q-accounts",
+			false,
+			false,
+			false,
+			false,
+			nil,
+		)
+
+		if err == nil {
+			var msgs <-chan amqp.Delivery
+			msgs, err = ch.Consume(
+				q.Name,
+				"c-stress",
+				true,
+				false,
+				false,
+				false,
+				nil,
+			)
+
+			if err == nil {
+				go func() {
+					for _ = range msgs {
+						processed++
+						fmt.Println(fmt.Sprintf("processed %d messages", processed))
+					}
+				}()
+			}
+		}
+	}
+
+	return err, &processed
 }

@@ -9,7 +9,10 @@ services:
     depends_on:
       - go-rabbit-mq
     environment:
-      - GO_ENV=docker
+      - GO_ENV=DOCKER
+      - QTD_SELL=10000
+      - QTD_MERCH=10000
+      - MINUTES_TIMEOUT=5
     networks:
       - go-network
     command: >
@@ -18,12 +21,12 @@ services:
   go-app:
     container_name: go-app
     build:
-      context: ../..
+      context: ..
       dockerfile: AppDockerfile
     depends_on:
       - go-rabbit-mq
     environment:
-      - GO_ENV=docker
+      - GO_ENV=DOCKER
     restart: on-failure
     ports:
       - 3000:3000

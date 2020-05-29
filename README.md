@@ -19,6 +19,12 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 3) on the project's root folder type "docker-compose -f docker/compose-infra.yml up --build" (optionally you can use -d to unlock the terminal)
 4) on the project's root folder type "go mod download" then "go run *.go"
 
+# run stress tests
+1) go to "tests" folder
+2) open the file "compose-stress.yml" and, into "go-stress-test" service, set "QTD_SELL" (quantity of sellers event to send), "QTD_MERCH" (quantity of merchants event to send) and "MINUTES_TIMEOUT" (timeout to complete test) 
+3) save and run the command docker-compose -f compose-stress.yml up --build
+4) go to http://localhost:15672/#/queues/ and check if all messages are into "q-accounts" queue
+
 # application health check routes
 Once running, you can call http://localhos:3000/live (also /health and /ready) to check the app status
 

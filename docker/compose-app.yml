@@ -9,7 +9,7 @@ services:
     depends_on:
       - go-rabbit-mq
     environment:
-      - GO_ENV=docker
+      - GO_ENV=DOCKER
     restart: on-failure
     ports:
       - 3000:3000

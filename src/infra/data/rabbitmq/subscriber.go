@@ -61,12 +61,12 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 		)
 
 		if err == nil {
-			go func(queueName string, msgs <-chan amqp.Delivery) {
+			go func() {
 				for msg := range msgs {
 					fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
 					sub.handler(msg.Body)
 				}
-			}(q.Name, msgs)
+			}()
 		}
 	}
 
