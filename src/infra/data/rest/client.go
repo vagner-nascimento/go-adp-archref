@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// TODO: set a timeout to rest calls
 type Client struct {
 	baseUrl              string
 	httpClient           http.Client
