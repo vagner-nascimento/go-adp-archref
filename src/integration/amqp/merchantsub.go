@@ -30,7 +30,7 @@ func newMerchantSub() repository.Subscription {
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,
 		handler: func(data []byte) {
-			createAccount(data)
+			addAccount(data)
 		},
 	}
 }

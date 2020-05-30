@@ -3,8 +3,8 @@ package channel
 func MultiplexErrors(errsCh ...<-chan error) <-chan error {
 	uniqueCh := make(chan error)
 
-	go func(ch *chan error, errs []<-chan error) {
-		totalChannels := len(errs)
+	go func() {
+		totalChannels := len(errsCh)
 		var closedChannels int
 
 		for _, errCh := range errsCh {
@@ -17,8 +17,8 @@ func MultiplexErrors(errsCh ...<-chan error) <-chan error {
 			}
 		}
 
-		close(*ch)
-	}(&uniqueCh, errsCh)
+		close(uniqueCh)
+	}()
 
 	return uniqueCh
 }
