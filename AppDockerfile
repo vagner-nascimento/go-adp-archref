@@ -28,6 +28,5 @@ RUN cp main /app
 
 # Copy config files into the app folder
 RUN cp -rf config/ /app
-RUN rm -rf /build
 
 WORKDIR /app

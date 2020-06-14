@@ -7,7 +7,7 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 1) if you don't have yet, install the docker and docker-compose (links bellow)
 2) on the project's root folder type "docker-compose -f docker/compose-app.yml up --build" (optionally you can use -d to unlock the terminal)
 3) access http://localhost:15672/#/queues
-4) click on the "q-merchants" or "q-sellers" to send data (that can be found into "tests/support/mock/")
+4) click on the "q-merchants" or "q-sellers" to send data (that can be found into "tests/support/mocks/")
 5) go to "Publish message", fill the "Payload" field with correspondent data and click in "Publish message" button
 6) go to http://localhost:15672/#/queues/ and click on "q-accounts"
 7) go to "Get messages", increase the number of desired messages to get on "Messages" field and click in "Get Message(s)" button

@@ -10,8 +10,8 @@ services:
       - go-rabbit-mq
     environment:
       - GO_ENV=DOCKER
-      - QTD_SELL=50000
-      - QTD_MERCH=50000
+      - QTD_SELL=2
+      - QTD_MERCH=2
       - MINUTES_TIMEOUT=10
     networks:
       - go-network
@@ -46,14 +46,14 @@ services:
     networks:
       - go-network
 
-  rest-mock:
-    container_name: rest-mock
+  go-rest-mock:
+    container_name: go-rest-mock
     image: vimagick/json-server
     command: -H 0.0.0.0 -p 4000 -w db.json
     ports:
       - 4000:4000
     volumes:
-      - ./support/mock/rest:/data
+      - ../docker/mocks/rest:/data
     restart: unless-stopped
     networks:
       - go-network

@@ -210,7 +210,7 @@ func pubMerchants(qtd int) <-chan error {
 	errs := make(chan error)
 
 	go func() {
-		json, err := os.Open("./support/mock/merchant.json")
+		json, err := os.Open("./support/mocks/merchant.json")
 		if err == nil {
 			defer json.Close()
 
@@ -237,7 +237,7 @@ func pubSellers(qtd int) <-chan error {
 	errs := make(chan error)
 
 	go func() {
-		json, err := os.Open("./support/mock/seller.json")
+		json, err := os.Open("./support/mocks/seller.json")
 		if err == nil {
 			defer json.Close()
 
