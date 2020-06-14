@@ -36,7 +36,7 @@ func StartRestServer(errsCh chan error) {
 		logger.Info("available rest routes:", availableRoutes)
 
 		port := config.Get().Presentation.Web.Port
-		logger.Info("starting rest server at port", port)
+		logger.Info("started rest server at port", port)
 
 		errsCh <- http.ListenAndServe(fmt.Sprintf(":%d", port), router)
 	}

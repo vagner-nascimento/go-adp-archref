@@ -34,3 +34,10 @@ func newMerchantAccounts(bytes []byte) (accounts []merchantAccount, err error) {
 
 	return
 }
+func newMerchantAccount(bytes []byte) (account merchantAccount, err error) {
+	if err = json.Unmarshal(bytes, &account); err != nil {
+		err = apperror.New("error on convert bytes into Merchant Account", err, nil)
+	}
+
+	return
+}

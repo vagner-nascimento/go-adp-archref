@@ -18,6 +18,69 @@ var (
 	testTimeOut  time.Duration
 )
 
+//func main() {
+//	if err, consumed := consumeAccounts(); err == nil {
+//		setTestParams()
+//
+//		start := time.Now()
+//		errs := multiplexErrors(
+//			pubMerchants(qtdMerchants),
+//			pubSellers(qtdSellers),
+//		)
+//
+//		for err := range errs {
+//			if err != nil {
+//				fmt.Println("pub err")
+//				panic(err)
+//			}
+//		}
+//
+//		totalSent := qtdSellers + qtdMerchants
+//		success := false
+//		timeLimit := time.Now().Add(testTimeOut)
+//
+//		fmt.Println("waiting for accounts consume")
+//
+//		for time.Now().Before(timeLimit) {
+//			if *consumed == totalSent {
+//				success = true
+//				break
+//			}
+//		}
+//
+//		if success {
+//			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
+//			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
+//		} else {
+//			fmt.Println("TEST FAILED")
+//			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
+//		}
+//	} else {
+//		fmt.Println("error on consume q-accounts", err)
+//	}
+//
+//	os.Exit(1)
+//}
+
+func main() {
+	setTestParams()
+	errs := multiplexErrors(
+		pubMerchants(qtdMerchants),
+		pubSellers(qtdSellers),
+	)
+
+	for err := range errs {
+		if err != nil {
+			fmt.Println("pub err")
+			panic(err)
+		}
+	}
+
+	fmt.Println(fmt.Sprintf("all %d messages were published", qtdMerchants+qtdSellers))
+
+	os.Exit(1)
+}
+
 func setTestParams() {
 	// default params
 	qtdSellers = 400
@@ -36,50 +99,6 @@ func setTestParams() {
 	}
 
 	testTimeOut = time.Minute * time.Duration(minutes)
-}
-
-func main() {
-	if err, consumed := consumeAccounts(); err == nil {
-		setTestParams()
-
-		start := time.Now()
-		errs := multiplexErrors(
-			pubMerchants(qtdMerchants),
-			pubSellers(qtdSellers),
-		)
-
-		for err := range errs {
-			if err != nil {
-				fmt.Println("pub err")
-				panic(err)
-			}
-		}
-
-		totalSent := qtdSellers + qtdMerchants
-		success := false
-		timeLimit := time.Now().Add(testTimeOut)
-
-		fmt.Println("waiting for accounts consume")
-
-		for time.Now().Before(timeLimit) {
-			if *consumed == totalSent {
-				success = true
-				break
-			}
-		}
-
-		if success {
-			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
-			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
-		} else {
-			fmt.Println("TEST FAILED")
-			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
-		}
-	} else {
-		fmt.Println("error on consume q-accounts", err)
-	}
-
-	os.Exit(1)
 }
 
 // Channel multiplexer

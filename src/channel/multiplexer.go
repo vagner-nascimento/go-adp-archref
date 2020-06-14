@@ -1,14 +1,14 @@
 package channel
 
-func MultiplexErrors(errsCh ...<-chan error) <-chan error {
-	uniqueCh := make(chan error)
+func Multiplex(bytesCh ...<-chan interface{}) <-chan interface{} {
+	uniqueCh := make(chan interface{})
 
 	go func() {
-		totalChannels := len(errsCh)
+		totalChannels := len(bytesCh)
 		var closedChannels int
 
-		for _, errCh := range errsCh {
-			go forwardError(errCh, uniqueCh, &closedChannels)
+		for _, ch := range bytesCh {
+			go forwardAny(ch, uniqueCh, &closedChannels)
 		}
 
 		for {
@@ -23,7 +23,7 @@ func MultiplexErrors(errsCh ...<-chan error) <-chan error {
 	return uniqueCh
 }
 
-func forwardError(from <-chan error, to chan error, closedChannels *int) {
+func forwardAny(from <-chan interface{}, to chan interface{}, closedChannels *int) {
 	for err := range from {
 		to <- err
 	}

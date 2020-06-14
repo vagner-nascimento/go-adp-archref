@@ -30,5 +30,17 @@
       "name": "Center Shop",
       "country": "UK"
     }
+  ],
+  "affiliations": [
+    {
+      "id": "m_1",
+      "merchant_id": "m_1",
+      "legal_document": "m_1_legal_doc"
+    },
+    {
+      "id": "m_2",
+      "merchant_id": "m_2",
+      "legal_document": "m_2_legal_doc"
+    }
   ]
 }

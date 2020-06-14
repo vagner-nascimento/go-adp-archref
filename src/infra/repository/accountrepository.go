@@ -14,9 +14,10 @@ import (
 )
 
 type accountRepository struct {
-	topic          string
-	merchantAccCli *rest.Client
-	merchantsCli   *rest.Client
+	topic           string
+	merchantAccCli  *rest.Client
+	merchantsCli    *rest.Client
+	affiliationsCli *rest.Client
 }
 
 func (repo *accountRepository) Save(account *app.Account) error {
@@ -25,6 +26,30 @@ func (repo *accountRepository) Save(account *app.Account) error {
 	} else {
 		return apperror.New("error on convert account's interface into bytes", err, nil)
 	}
+}
+
+func (repo *accountRepository) GetMerchantAccount(accId string) (data []byte, err error) {
+	status, data, gErr := repo.merchantAccCli.Get("", accId)
+	msg := "error on try to get Merchant Account"
+
+	if gErr != nil {
+		logger.Error(msg, gErr)
+		err = errors.New(msg)
+		return
+	}
+
+	if isHttpResponseFailed(status) {
+		if status == http.StatusNotFound {
+			err = handleNotfoundError("Merchant Account not found", data)
+		} else {
+			err = apperror.New(msg, nil, data)
+			logger.Error(msg, err)
+		}
+
+		data = nil
+	}
+
+	return
 }
 
 func (repo *accountRepository) GetMerchantAccounts(merchantId string) (data []byte, err error) {
@@ -75,10 +100,35 @@ func (repo *accountRepository) GetMerchant(merchantId string) (data []byte, err 
 	return
 }
 
+func (repo *accountRepository) GetAffiliation(affId string) (data []byte, err error) {
+	status, data, gErr := repo.affiliationsCli.Get("", affId)
+	msg := "error on try to get Affiliation"
+
+	if gErr != nil {
+		logger.Error(msg, gErr)
+		err = errors.New(msg)
+		return
+	}
+
+	if isHttpResponseFailed(status) {
+		if status == http.StatusNotFound {
+			err = handleNotfoundError("Affiliation not found", data)
+		} else {
+			err = apperror.New(msg, nil, data)
+			logger.Error(msg, err)
+		}
+
+		data = nil
+	}
+
+	return
+}
+
 func NewAccountRepository() *accountRepository {
 	intConf := config.Get().Integration
 	mAccCliConf := intConf.Rest.MerchantAccounts
 	mCliConf := intConf.Rest.Merchants
+	affCliConf := intConf.Rest.Affiliations
 
 	return &accountRepository{
 		topic: intConf.Amqp.Pubs.CrmAccount.Topic,
@@ -91,6 +141,11 @@ func NewAccountRepository() *accountRepository {
 			mCliConf.BaseUrl,
 			mCliConf.TimeOut*time.Second,
 			mCliConf.RejectUnauthorized,
+		),
+		affiliationsCli: rest.NewClient(
+			affCliConf.BaseUrl,
+			affCliConf.TimeOut*time.Second,
+			affCliConf.RejectUnauthorized,
 		),
 	}
 }

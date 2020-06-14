@@ -60,6 +60,7 @@ type ResClientConfig struct {
 type RestIntegrationConfig struct {
 	MerchantAccounts ResClientConfig `json:"merchantAccounts"`
 	Merchants        ResClientConfig `json:"merchants"`
+	Affiliations     ResClientConfig `json:"affiliations"`
 }
 
 type IntegrationConfig struct {

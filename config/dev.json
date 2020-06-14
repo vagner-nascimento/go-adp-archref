@@ -42,6 +42,11 @@
         "baseUrl": "http://localhost:4000/merchants",
         "timeOut": 3,
         "rejectUnauthorized": false
+      },
+      "affiliations": {
+        "baseUrl": "http://localhost:4000/affiliations",
+        "timeout": 3,
+        "rejectUnauthorized": false
       }
     }
   }

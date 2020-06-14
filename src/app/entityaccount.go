@@ -14,6 +14,7 @@ type (
 		Type             string            `json:"type"`
 		Id               string            `json:"id"`
 		MerchantId       *string           `json:"merchant_id"`
+		AccountId        string            `json:"merchant_account_id,omitempty"`
 		Name             string            `json:"name"`
 		LegalDocument    *string           `json:"legal_document"`
 		Contacts         []contact         `json:"contacts"`
