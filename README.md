@@ -29,6 +29,9 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 # application health check routes
 Once running, you can call http://localhos:3000/live (also /health and /ready) to check the app status
 
+# stress test result running on docker
+    - 100.000 messages in 9:43 minutes (pc configs: intel i7 9th gen and 8GB ram memory)
+
 # requirements
     - [x] consume topics
     - [x] publish on topics

@@ -12,74 +12,17 @@ import (
 	"time"
 )
 
+func main() {
+	setTestParams()
+	runWithoutConsume()
+	//runWithConsume()
+}
+
 var (
 	qtdSellers   int
 	qtdMerchants int
 	testTimeOut  time.Duration
 )
-
-//func main() {
-//	if err, consumed := consumeAccounts(); err == nil {
-//		setTestParams()
-//
-//		start := time.Now()
-//		errs := multiplexErrors(
-//			pubMerchants(qtdMerchants),
-//			pubSellers(qtdSellers),
-//		)
-//
-//		for err := range errs {
-//			if err != nil {
-//				fmt.Println("pub err")
-//				panic(err)
-//			}
-//		}
-//
-//		totalSent := qtdSellers + qtdMerchants
-//		success := false
-//		timeLimit := time.Now().Add(testTimeOut)
-//
-//		fmt.Println("waiting for accounts consume")
-//
-//		for time.Now().Before(timeLimit) {
-//			if *consumed == totalSent {
-//				success = true
-//				break
-//			}
-//		}
-//
-//		if success {
-//			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
-//			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
-//		} else {
-//			fmt.Println("TEST FAILED")
-//			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
-//		}
-//	} else {
-//		fmt.Println("error on consume q-accounts", err)
-//	}
-//
-//	os.Exit(1)
-//}
-
-func main() {
-	setTestParams()
-	errs := multiplexErrors(
-		pubMerchants(qtdMerchants),
-		pubSellers(qtdSellers),
-	)
-
-	for err := range errs {
-		if err != nil {
-			fmt.Println("pub err")
-			panic(err)
-		}
-	}
-
-	fmt.Println(fmt.Sprintf("all %d messages were published", qtdMerchants+qtdSellers))
-
-	os.Exit(1)
-}
 
 func setTestParams() {
 	// default params
@@ -101,36 +44,62 @@ func setTestParams() {
 	testTimeOut = time.Minute * time.Duration(minutes)
 }
 
-// Channel multiplexer
-func multiplexErrors(errsCh ...<-chan error) <-chan error {
-	uniqueCh := make(chan error)
+func runWithConsume() {
+	if err, consumed := consumeAccounts(); err == nil {
+		start := time.Now()
+		errs := multiplexErrors(
+			pubMerchants(qtdMerchants),
+			pubSellers(qtdSellers),
+		)
 
-	go func(ch *chan error, errs []<-chan error) {
-		totalChannels := len(errs)
-		var closedChannels int
-
-		for _, errCh := range errsCh {
-			go forwardError(errCh, uniqueCh, &closedChannels)
+		for err := range errs {
+			if err != nil {
+				fmt.Println("pub err")
+				panic(err)
+			}
 		}
 
-		for {
-			if totalChannels == closedChannels {
+		totalSent := qtdSellers + qtdMerchants
+		success := false
+		timeLimit := time.Now().Add(testTimeOut)
+
+		fmt.Println("waiting for accounts consume")
+
+		for time.Now().Before(timeLimit) {
+			if *consumed == totalSent {
+				success = true
 				break
 			}
 		}
 
-		close(*ch)
-	}(&uniqueCh, errsCh)
-
-	return uniqueCh
-}
-
-func forwardError(from <-chan error, to chan error, closedChannels *int) {
-	for err := range from {
-		to <- err
+		if success {
+			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
+			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
+		} else {
+			fmt.Println("TEST FAILED")
+			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
+		}
+	} else {
+		fmt.Println("error on consume q-accounts", err)
 	}
 
-	*closedChannels++
+	os.Exit(0)
+}
+
+func runWithoutConsume() {
+	errs := multiplexErrors(
+		pubMerchants(qtdMerchants),
+		pubSellers(qtdSellers),
+	)
+
+	for err := range errs {
+		if err != nil {
+			fmt.Println("pub err")
+			panic(err)
+		}
+	}
+
+	fmt.Println(fmt.Sprintf("all %d messages were published", qtdMerchants+qtdSellers))
 }
 
 // AMQP
@@ -304,4 +273,36 @@ func consumeAccounts() (error, *int) {
 	}
 
 	return err, &processed
+}
+
+// Channel multiplexer
+func multiplexErrors(errsCh ...<-chan error) <-chan error {
+	uniqueCh := make(chan error)
+
+	go func(ch *chan error, errs []<-chan error) {
+		totalChannels := len(errs)
+		var closedChannels int
+
+		for _, errCh := range errsCh {
+			go forwardError(errCh, uniqueCh, &closedChannels)
+		}
+
+		for {
+			if totalChannels == closedChannels {
+				break
+			}
+		}
+
+		close(*ch)
+	}(&uniqueCh, errsCh)
+
+	return uniqueCh
+}
+
+func forwardError(from <-chan error, to chan error, closedChannels *int) {
+	for err := range from {
+		to <- err
+	}
+
+	*closedChannels++
 }

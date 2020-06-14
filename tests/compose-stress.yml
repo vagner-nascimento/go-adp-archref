@@ -10,9 +10,10 @@ services:
       - go-rabbit-mq
     environment:
       - GO_ENV=DOCKER
-      - QTD_SELL=2
-      - QTD_MERCH=2
+      - QTD_SELL=50000
+      - QTD_MERCH=50000
       - MINUTES_TIMEOUT=10
+    restart: on-failure
     networks:
       - go-network
     command: >
