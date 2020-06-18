@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/loader"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-adp-bridge/src/loader"
 	"os"
 )
 

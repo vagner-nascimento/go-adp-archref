@@ -10,36 +10,42 @@ import (
 	"strings"
 )
 
-func StartRestServer(errsCh chan error) {
-	router := chi.NewRouter()
-	router.Use(getMiddlewareList()...)
-	router.Route("/", func(r chi.Router) {
-		r.Mount("/", newHealthRoutes())
-	})
+func StartRestServer() <-chan error {
+	errsCh := make(chan error)
 
-	var availableRoutes string
-	walkThroughRoutes := func(
-		method string,
-		route string,
-		handler http.Handler,
-		middleware ...func(http.Handler) http.Handler,
-	) error {
-		availableRoutes += fmt.Sprintf("\n%s %s", method, strings.Replace(route, "/*/", "/", -1))
+	go func() {
+		defer close(errsCh)
 
-		return nil
-	}
+		router := chi.NewRouter()
+		router.Use(getMiddlewareList()...)
+		router.Route("/", func(r chi.Router) {
+			r.Mount("/", newHealthRoutes())
+		})
 
-	if err := chi.Walk(router, walkThroughRoutes); err != nil {
-		logger.Error("error on verify rest routes", err)
-		errsCh <- apperror.New("an error occurred on try to start rest server", err, nil)
-	} else {
-		logger.Info("available rest routes:", availableRoutes)
+		var availableRoutes string
+		walkThroughRoutes := func(
+			method string,
+			route string,
+			handler http.Handler,
+			middleware ...func(http.Handler) http.Handler,
+		) error {
+			availableRoutes += fmt.Sprintf("\n%s %s", method, strings.Replace(route, "/*/", "/", -1))
 
-		port := config.Get().Presentation.Web.Port
-		logger.Info("started rest server at port", port)
+			return nil
+		}
 
-		errsCh <- http.ListenAndServe(fmt.Sprintf(":%d", port), router)
-	}
+		if err := chi.Walk(router, walkThroughRoutes); err != nil {
+			logger.Error("error on verify rest routes", err)
+			errsCh <- apperror.New("an error occurred on try to start rest server", err, nil)
+		} else {
+			logger.Info("available rest routes:", availableRoutes)
 
-	close(errsCh)
+			port := config.Get().Presentation.Web.Port
+			logger.Info("started rest server at port", port)
+
+			errsCh <- http.ListenAndServe(fmt.Sprintf(":%d", port), router)
+		}
+	}()
+
+	return errsCh
 }

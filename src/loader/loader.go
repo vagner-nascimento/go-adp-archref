@@ -23,7 +23,9 @@ func loadConfiguration() {
 	logger.Info("loading configurations", nil)
 	env := os.Getenv("GO_ENV")
 	if env == "" {
-		env = "DEV"
+		env = "LOCAL"
+
+		logger.Info("GO_ENV not informed, using LOCAL", nil)
 	}
 	if err := config.Load(env); err != nil {
 		logger.Error("cannot load configurations", err)

@@ -5,8 +5,5 @@ import (
 )
 
 func StartRestPresentation() <-chan error {
-	serverErrs := make(chan error)
-	go rest.StartRestServer(serverErrs)
-
-	return serverErrs
+	return rest.StartRestServer()
 }
