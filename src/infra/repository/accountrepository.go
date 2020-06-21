@@ -7,17 +7,17 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/app"
 	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rabbitmq"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rest"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	http2 "github.com/vagner-nascimento/go-adp-bridge/src/integration/rest"
 	"net/http"
 	"time"
 )
 
 type accountRepository struct {
 	topic           string
-	merchantAccCli  *rest.Client
-	merchantsCli    *rest.Client
-	affiliationsCli *rest.Client
+	merchantAccCli  *http2.Client
+	merchantsCli    *http2.Client
+	affiliationsCli *http2.Client
 }
 
 func (repo *accountRepository) Save(account *app.Account) error {
@@ -132,17 +132,17 @@ func NewAccountRepository() *accountRepository {
 
 	return &accountRepository{
 		topic: intConf.Amqp.Pubs.CrmAccount.Topic,
-		merchantAccCli: rest.NewClient(
+		merchantAccCli: http2.NewClient(
 			mAccCliConf.BaseUrl,
 			mAccCliConf.TimeOut*time.Second,
 			mAccCliConf.RejectUnauthorized,
 		),
-		merchantsCli: rest.NewClient(
+		merchantsCli: http2.NewClient(
 			mCliConf.BaseUrl,
 			mCliConf.TimeOut*time.Second,
 			mCliConf.RejectUnauthorized,
 		),
-		affiliationsCli: rest.NewClient(
+		affiliationsCli: http2.NewClient(
 			affCliConf.BaseUrl,
 			affCliConf.TimeOut*time.Second,
 			affCliConf.RejectUnauthorized,

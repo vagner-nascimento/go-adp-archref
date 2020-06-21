@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
-	integration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	integration "github.com/vagner-nascimento/go-adp-bridge/src/interface/amqp"
 	"github.com/vagner-nascimento/go-adp-bridge/src/presentation"
 	"os"
 )
