@@ -5,7 +5,7 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	integration "github.com/vagner-nascimento/go-adp-bridge/src/interface/amqp"
-	"github.com/vagner-nascimento/go-adp-bridge/src/presentation"
+	"github.com/vagner-nascimento/go-adp-bridge/src/interface/rest"
 	"log"
 	"os"
 )
@@ -14,7 +14,7 @@ func LoadApplication() (errs <-chan error) {
 	loadConfiguration()
 
 	if err := integration.SubscribeConsumers(); err == nil {
-		errs = presentation.StartRestPresentation()
+		errs = rest.StartRestServer()
 	}
 
 	return
