@@ -8,15 +8,7 @@ func SubscribeConsumers() error {
 	if connStatus, err := repository.SubscribeConsumers(getSubscriptions(), true); err != nil {
 		return err
 	} else {
-		go func() {
-			for isOn := range connStatus {
-				if !isOn {
-					if err := reSubscribeConsumers(connStatus); err != nil {
-						return
-					}
-				}
-			}
-		}()
+		go watchConnStatus(connStatus)
 	}
 
 	return nil
@@ -28,6 +20,16 @@ func getSubscriptions() (subs []repository.Subscription) {
 		newSellerSub(),
 		newMerchantSub(),
 	)
+}
+
+func watchConnStatus(connStatus <-chan bool) {
+	for isOn := range connStatus {
+		if !isOn {
+			if err := reSubscribeConsumers(connStatus); err != nil {
+				return
+			}
+		}
+	}
 }
 
 func reSubscribeConsumers(connStatus <-chan bool) error {
