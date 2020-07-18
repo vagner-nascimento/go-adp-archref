@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 	"github.com/streadway/amqp"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 )
 
 func SubscribeConsumer(queueName string, consumerName string, handler func([]byte)) (err error) {
@@ -11,7 +12,9 @@ func SubscribeConsumer(queueName string, consumerName string, handler func([]byt
 
 	if err == nil {
 		sub := newSubscriberInfo(queueName, consumerName, handler)
-		err = processMessages(rbChan, sub)
+		if err = processMessages(rbChan, sub); err == nil {
+			logger.Info(fmt.Sprintf("consumer %s subscribed into amqp queue %s", consumerName, queueName), nil)
+		}
 	}
 
 	return

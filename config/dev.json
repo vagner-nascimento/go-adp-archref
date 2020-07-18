@@ -4,7 +4,7 @@
       "connStr": "amqp://guest:guest@localhost:5672",
       "exitOnLostConnection": true,
       "connectionRetry": {
-        "sleep": 2,
+        "sleep": 4,
         "maxTries": 10
       }
     }

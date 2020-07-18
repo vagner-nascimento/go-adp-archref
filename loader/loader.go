@@ -6,46 +6,36 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	integration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
 	"github.com/vagner-nascimento/go-adp-bridge/src/presentation"
+	"log"
 	"os"
 )
 
 func LoadApplication() (errs <-chan error) {
 	loadConfiguration()
 
-	if loadIntegration() {
-		errs = loadPresentation()
+	if err := integration.SubscribeConsumers(); err == nil {
+		errs = presentation.StartRestPresentation()
 	}
 
 	return
 }
 
 func loadConfiguration() {
-	logger.Info("loading configurations", nil)
 	env := os.Getenv("GO_ENV")
+
 	if env == "" {
 		env = "DEV"
 	}
+
+	erroMsg := "cannot load configurations"
+
 	if err := config.Load(env); err != nil {
-		logger.Error("cannot load configurations", err)
-		os.Exit(1)
+		log.Fatal(erroMsg, err)
 	}
 
-	conf, _ := json.Marshal(config.Get())
-	logger.Info("configurations loaded", string(conf))
-}
-
-func loadIntegration() (sucess bool) {
-	logger.Info("loading subscribers", nil)
-	if err := integration.SubscribeConsumers(); err != nil {
-		logger.Error("error subscribe consumers", err)
+	if conf, err := json.Marshal(config.Get()); err == nil {
+		logger.Info("**CONFIGS**", string(conf))
 	} else {
-		logger.Info("consumers successfully subscribed", nil)
-		sucess = true
+		log.Fatal(erroMsg, err)
 	}
-
-	return
-}
-
-func loadPresentation() <-chan error {
-	return presentation.StartRestPresentation()
 }
