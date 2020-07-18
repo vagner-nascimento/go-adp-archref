@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
-	integration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	integration "github.com/vagner-nascimento/go-adp-bridge/src/interface/amqp"
 	"github.com/vagner-nascimento/go-adp-bridge/src/presentation"
 	"log"
 	"os"
@@ -24,7 +24,9 @@ func loadConfiguration() {
 	env := os.Getenv("GO_ENV")
 
 	if env == "" {
-		env = "DEV"
+		env = "LOCAL"
+
+		logger.Info("GO_ENV not informed, using LOCAL", nil)
 	}
 
 	erroMsg := "cannot load configurations"
