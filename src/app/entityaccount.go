@@ -18,7 +18,7 @@ type (
 		Name             string            `json:"name"`
 		LegalDocument    *string           `json:"legal_document"`
 		Contacts         []contact         `json:"contacts"`
-		MerchantAccounts []merchantAccount `json:"merchant_accounts"`
+		MerchantAccounts []MerchantAccount `json:"merchant_accounts"`
 		Country          *string           `json:"country"`
 		UpdatedDate      dateTime          `json:"updated_date"`
 		LastPaymentDate  *date             `json:"last_payment_date"`
@@ -32,7 +32,7 @@ type (
 	}
 )
 
-func (acc *Account) addMerchantAccount(merAccounts merchantAccount) {
+func (acc *Account) addMerchantAccount(merAccounts MerchantAccount) {
 	acc.MerchantAccounts = append(acc.MerchantAccounts, merAccounts)
 }
 
@@ -48,7 +48,7 @@ func newAccount(data []byte) (acc *Account, err error) {
 		}
 
 		if acc.MerchantAccounts == nil {
-			acc.MerchantAccounts = []merchantAccount{}
+			acc.MerchantAccounts = []MerchantAccount{}
 		}
 	}
 

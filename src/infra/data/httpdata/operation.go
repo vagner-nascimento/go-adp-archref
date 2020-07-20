@@ -9,21 +9,19 @@ import (
 
 func performGet(client http.Client, url string) (status int, data []byte, err error) {
 	var res *http.Response
+	res, err = client.Get(url)
 
-	if res, err = client.Get(url); err != nil {
-		logger.Error(fmt.Sprintf("error on try to call GET: %s", url), err)
-
+	if err != nil {
+		logger.Error(fmt.Sprintf("Http GET - error on call %s:", url), err)
 		status = http.StatusServiceUnavailable
 	} else {
 		defer res.Body.Close()
 
 		status = res.StatusCode
-		logger.Info(fmt.Sprintf("success on call GET: %s - response status %d - %s", url, status, res.Status), nil)
-
-		if data, err = ioutil.ReadAll(res.Body); err == nil {
-			logger.Info("response data", string(data))
-		}
+		data, err = ioutil.ReadAll(res.Body)
 	}
+
+	logger.Info(fmt.Sprintf("Http GET - the call to the %s returned status %d and response:", url, status), res)
 
 	return status, data, err
 }

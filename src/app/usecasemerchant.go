@@ -11,16 +11,10 @@ func getMerchantEnrichmentData(acc Account, repo AccountDataHandler) <-chan inte
 
 		var (
 			err  error
-			data []byte
-			mAcc []merchantAccount
+			mAcc []MerchantAccount
 		)
 
-		if data, err = repo.GetMerchantAccounts(acc.Id); err != nil {
-			accCh <- err
-			return
-		}
-
-		if mAcc, err = newMerchantAccounts(data); err != nil {
+		if mAcc, err = repo.GetMerchantAccounts(acc.Id); err != nil {
 			accCh <- err
 			return
 		}
@@ -32,17 +26,11 @@ func getMerchantEnrichmentData(acc Account, repo AccountDataHandler) <-chan inte
 		defer close(affCh)
 
 		var (
-			err  error
-			data []byte
-			aff  affiliation
+			err error
+			aff Affiliation
 		)
 
-		if data, err = repo.GetAffiliation(acc.Id); err != nil {
-			affCh <- err
-			return
-		}
-
-		if aff, err = newAffiliation(data); err != nil {
+		if aff, err = repo.GetAffiliation(acc.Id); err != nil {
 			affCh <- err
 			return
 		}
@@ -53,7 +41,7 @@ func getMerchantEnrichmentData(acc Account, repo AccountDataHandler) <-chan inte
 	return channel.Multiplex(accCh, affCh)
 }
 
-func enrichMerchantAccount(acc *Account, mAccounts []merchantAccount, aff *affiliation) {
+func enrichMerchantAccount(acc *Account, mAccounts []MerchantAccount, aff *Affiliation) {
 	if mAccounts != nil {
 		for _, merAcc := range mAccounts {
 			acc.addMerchantAccount(merAcc)

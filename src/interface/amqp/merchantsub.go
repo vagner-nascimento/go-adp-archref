@@ -31,8 +31,6 @@ func newMerchantSub() repository.Subscription {
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,
 		handler: func(data []byte) {
-			logger.Info("MerchantSub - message data received", string(data))
-
 			if acc, err := addAccount(data); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else {

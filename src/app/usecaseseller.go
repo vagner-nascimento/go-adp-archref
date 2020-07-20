@@ -10,17 +10,11 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 		defer close(mCh)
 
 		var (
-			err  error
-			data []byte
-			mer  merchant
+			err error
+			mer Merchant
 		)
 
-		if data, err = repo.GetMerchant(*acc.MerchantId); err != nil {
-			mCh <- err
-			return
-		}
-
-		if mer, err = newMerchant(data); err != nil {
+		if mer, err = repo.GetMerchant(*acc.MerchantId); err != nil {
 			mCh <- err
 			return
 		}
@@ -33,16 +27,10 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 
 		var (
 			err  error
-			data []byte
-			mAcc merchantAccount
+			mAcc MerchantAccount
 		)
 
-		if data, err = repo.GetMerchantAccount(acc.AccountId); err != nil {
-			accCh <- err
-			return
-		}
-
-		if mAcc, err = newMerchantAccount(data); err != nil {
+		if mAcc, err = repo.GetMerchantAccount(acc.AccountId); err != nil {
 			accCh <- err
 			return
 		}
@@ -53,7 +41,7 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 	return channel.Multiplex(mCh, accCh)
 }
 
-func enrichSellerAccount(acc *Account, mer *merchant, mAcc *merchantAccount) {
+func enrichSellerAccount(acc *Account, mer *Merchant, mAcc *MerchantAccount) {
 	if mer != nil {
 		acc.Country = &mer.Country
 	}

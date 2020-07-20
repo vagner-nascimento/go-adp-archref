@@ -14,7 +14,7 @@ type rabbitPubInfo struct {
 }
 
 func Publish(data []byte, topic string) (err error) {
-	logger.Info("AMQP Publiser - data to send to topic", string(data))
+	logger.Info(fmt.Sprintf("AMQP Publiser - data to send to topic %s: ", topic), string(data))
 
 	pubInfo := newRabbitPubInfo(data, topic)
 
