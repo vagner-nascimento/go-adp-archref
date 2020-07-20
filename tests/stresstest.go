@@ -26,8 +26,8 @@ var (
 
 func setTestParams() {
 	// default params
-	qtdSellers = 400
-	qtdMerchants = 400
+	qtdSellers = 50000
+	qtdMerchants = 50000
 	minutes := 1
 
 	// env params

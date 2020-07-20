@@ -30,8 +30,12 @@ This kind of adapter receives data from topics or queues (one or many), transfor
 Once running, you can call http://localhos:3000/live (also /health and /ready) to check the app status
 
 # stress test result running on docker
-    - 100.000 messages in 9:43 minutes (pc configs: intel i7 9th gen and 8GB ram memory)
-    - After improvments, it processed 100.000 messages in 6:59 minutes in the same pc
+    - Tests with 50k merchants and 50k sellers, total of 100k messages
+    - PC configs: Intel i7 9th gen and 8GB of memory
+    - Running producer and consumer togheter:
+        - 1st: completed in 9:43 minutes
+        - 2nd (after improvments): completed in 6:59 minuts
+    - Running only consumer with data already into topics: completed in 6:00 minutes
 
 # requirements
     - [x] consume topics
