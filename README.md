@@ -31,6 +31,7 @@ Once running, you can call http://localhos:3000/live (also /health and /ready) t
 
 # stress test result running on docker
     - 100.000 messages in 9:43 minutes (pc configs: intel i7 9th gen and 8GB ram memory)
+    - After improvments, it processed 100.000 messages in 6:59 minutes in the same pc
 
 # requirements
     - [x] consume topics
