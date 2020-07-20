@@ -15,5 +15,6 @@ func writeOkResponse(w http.ResponseWriter, data interface{}) {
 func getHealthResponseData() map[string]string {
 	return map[string]string{
 		"status": "UP",
+		"checks": "0",
 	}
 }

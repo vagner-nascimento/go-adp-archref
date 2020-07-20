@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/rabbitmq"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/amqpdata"
 )
 
 type Subscription interface {
@@ -12,7 +12,7 @@ type Subscription interface {
 
 func SubscribeConsumers(subs []Subscription, newStatusChannel bool) (connStatus <-chan bool, err error) {
 	for _, sub := range subs {
-		if err = rabbitmq.SubscribeConsumer(sub.GetTopic(), sub.GetConsumer(), sub.GetHandler()); err != nil {
+		if err = amqpdata.SubscribeConsumer(sub.GetTopic(), sub.GetConsumer(), sub.GetHandler()); err != nil {
 			connStatus = nil
 
 			return
@@ -20,7 +20,7 @@ func SubscribeConsumers(subs []Subscription, newStatusChannel bool) (connStatus 
 	}
 
 	if newStatusChannel {
-		connStatus = rabbitmq.ListenConnection()
+		connStatus = amqpdata.ListenConnection()
 	}
 
 	return

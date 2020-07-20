@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"encoding/json"
 	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 )
 
@@ -30,7 +32,13 @@ func newSellerSub() repository.Subscription {
 		topic:    sellerConfig.Topic,
 		consumer: sellerConfig.Consumer,
 		handler: func(data []byte) {
-			addAccount(data)
+			if acc, err := addAccount(data); err != nil {
+				logger.Error("SellerSub - error on try to add account", err)
+			} else {
+				bytes, _ := json.Marshal(acc)
+
+				logger.Info("SellerSub - account added", string(bytes))
+			}
 		},
 	}
 }

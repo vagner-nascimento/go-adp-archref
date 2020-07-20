@@ -25,14 +25,14 @@ func getSubscriptions() (subs []repository.Subscription) {
 func watchConnStatus(connStatus <-chan bool) {
 	for isOn := range connStatus {
 		if !isOn {
-			if err := reSubscribeConsumers(connStatus); err != nil {
+			if err := reSubscribeWhenConnIsOn(connStatus); err != nil {
 				return
 			}
 		}
 	}
 }
 
-func reSubscribeConsumers(connStatus <-chan bool) error {
+func reSubscribeWhenConnIsOn(connStatus <-chan bool) error {
 	for isOn := range connStatus {
 		if isOn {
 			if _, err := repository.SubscribeConsumers(getSubscriptions(), false); err != nil {
