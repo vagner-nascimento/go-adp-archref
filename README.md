@@ -34,8 +34,8 @@ Once running, you can call http://localhos:3000/live (also /health and /ready) t
     - PC configs: Intel i7 9th gen and 8GB of memory
     - Running producer and consumer togheter:
         - 1st: completed in 9:43 minutes
-        - 2nd (after improvments): completed in 6:59 minuts
-    - Running only consumer with data already into topics: completed in 6:00 minutes
+        - 2nd (after improvments): completed in 6:59 minutes
+    - Running only consumer with data already on topics: completed in 6:00 minutes
 
 # requirements
     - [x] consume topics
