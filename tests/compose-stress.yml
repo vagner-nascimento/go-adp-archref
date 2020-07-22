@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  go-stress-test:
-    container_name: go-stress-test
+  go-producer:
+    container_name: go-producer
     build:
       context: .
       dockerfile: StressTestDockerFile
@@ -10,9 +10,9 @@ services:
       - go-rabbit-mq
     environment:
       - GO_ENV=DOCKER
-      - QTD_SELL=100000
-      - QTD_MERCH=100000
-      - MINUTES_TIMEOUT=30
+      - QTD_SELL=50000
+      - QTD_MERCH=50000
+      - MINUTES_TIMEOUT=10
     restart: on-failure
     networks:
       - go-network

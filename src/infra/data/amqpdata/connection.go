@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+/*
+	TODO: AMQP improvements:
+		1 - make a singleton connection to pub and other to sub
+		2 - make a channel to sub all without close it
+		3 - make a channel to pub and re-use it as much as possible
+*/
 type connection struct {
 	conn    *amqp.Connection
 	connect sync.Once
