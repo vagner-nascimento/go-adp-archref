@@ -5,7 +5,7 @@
       "exitOnLostConnection": true,
       "connectionRetry": {
         "sleep": 4,
-        "maxTries": 10
+        "maxTries": 2
       }
     }
   },

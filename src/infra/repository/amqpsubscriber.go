@@ -20,7 +20,7 @@ func SubscribeConsumers(subs []Subscription, newStatusChannel bool) (connStatus 
 	}
 
 	if newStatusChannel {
-		connStatus = amqpdata.ListenConnection()
+		connStatus = amqpdata.ListenSubConnection()
 	}
 
 	return

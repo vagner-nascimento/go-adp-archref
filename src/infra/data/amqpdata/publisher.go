@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/streadway/amqp"
+	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 )
 
@@ -13,7 +14,15 @@ type rabbitPubInfo struct {
 	data    amqp.Publishing
 }
 
+var pubConnection *amqpConnection
+
 func Publish(data []byte, topic string) (err error) {
+	if pubConnection == nil || !pubConnection.isConnected() {
+		if pubConnection, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
+			return
+		}
+	}
+
 	logger.Info(fmt.Sprintf("AMQP Publiser - data to send to topic %s: ", topic), string(data))
 
 	pubInfo := newRabbitPubInfo(data, topic)
@@ -23,9 +32,7 @@ func Publish(data []byte, topic string) (err error) {
 		qPub amqp.Queue
 	)
 
-	if rbCh, err = newChannel(); err == nil {
-		defer rbCh.Close()
-
+	if rbCh, err = pubConnection.getChannel(); err == nil {
 		qPub, err = rbCh.QueueDeclare(
 			pubInfo.queue.Name,
 			pubInfo.queue.Durable,
