@@ -5,10 +5,10 @@ import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/provider"
 )
 
-func addAccount(data []byte) (acc *app.Account, err error) {
+func addAccount(entity interface{}) (acc *app.Account, err error) {
 	accAdp := provider.GetAccountAdapter()
 
-	if acc, err = accAdp.AddAccount(data); err != nil {
+	if acc, err = accAdp.AddAccount(entity); err != nil {
 		acc = nil
 	}
 

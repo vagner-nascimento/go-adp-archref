@@ -30,7 +30,7 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 			mAcc MerchantAccount
 		)
 
-		if mAcc, err = repo.GetMerchantAccount(acc.AccountId); err != nil {
+		if mAcc, err = repo.GetMerchantAccount(*acc.AccountId); err != nil {
 			accCh <- err
 			return
 		}
@@ -49,6 +49,4 @@ func enrichSellerAccount(acc *Account, mer *Merchant, mAcc *MerchantAccount) {
 	if mAcc != nil {
 		acc.addMerchantAccount(*mAcc)
 	}
-
-	acc.AccountId = ""
 }

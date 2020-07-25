@@ -2,6 +2,7 @@ package integration
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/config"
+	"github.com/vagner-nascimento/go-adp-bridge/src/app"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
 )
@@ -31,7 +32,9 @@ func newMerchantSub() repository.Subscription {
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,
 		handler: func(data []byte) {
-			if acc, err := addAccount(data); err != nil {
+			if merchant, err := app.NewMerchant(data); err != nil {
+				logger.Error("MerchantSub - error on try to add account", err)
+			} else if acc, err := addAccount(merchant); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else {
 				logger.Info("MerchantSub - account added", acc)

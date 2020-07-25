@@ -1,8 +1,16 @@
 package app
 
-// TODO: receive an interface{} and validate if merchant or seller type
-func createAccount(data []byte) (*Account, error) {
-	return newAccount(data)
+import "github.com/vagner-nascimento/go-adp-bridge/src/apperror"
+
+func createAccount(entity interface{}) (*Account, error) {
+	switch entity.(type) {
+	case Seller:
+		return newAccountFromSeller(entity.(Seller)), nil
+	case Merchant:
+		return newAccountFromMerchant(entity.(Merchant)), nil
+	default:
+		return nil, apperror.New("invalid data type to create an account", nil, nil)
+	}
 }
 
 func enrichAccount(acc *Account, repo AccountDataHandler) <-chan error {

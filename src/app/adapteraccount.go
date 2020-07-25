@@ -8,9 +8,8 @@ type AccountAdapter struct {
 	repo AccountDataHandler
 }
 
-// TODO: receive an interface{} and validate if is seller or merchant
-func (aa *AccountAdapter) AddAccount(data []byte) (acc *Account, err error) {
-	if acc, err = createAccount(data); err == nil {
+func (aa *AccountAdapter) AddAccount(entity interface{}) (acc *Account, err error) {
+	if acc, err = createAccount(entity); err == nil {
 		enrichErrs := enrichAccount(acc, aa.repo)
 
 		for cErr := range enrichErrs {
