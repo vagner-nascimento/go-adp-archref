@@ -20,4 +20,4 @@ RUN apk update && apk add bash
 
 # Move app startup script to its properly folder
 RUN mkdir /scripts
-RUN mv ./docker/wait-for-it.sh /scripts
+COPY ["./docker/wait-for-it.sh", "/scripts"]

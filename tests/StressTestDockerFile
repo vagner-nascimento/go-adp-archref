@@ -19,4 +19,4 @@ RUN apk update && apk add bash
 
 # Move app startup script to its properly folder
 RUN mkdir /scripts
-RUN mv ./wait-for-it.sh /scripts
+COPY ["./wait-for-it.sh", "/scripts"]
