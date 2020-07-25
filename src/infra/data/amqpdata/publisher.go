@@ -20,7 +20,7 @@ var pubConnection *amqpConnection
 /*
 	TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
 
-	- Error (occours with merch and sell)
+	- Possible Error (occours with merch and sell):
 		25/07/2020 08:33:53 - error on publish data into rabbit queue q-accounts:
 		Exception (505) Reason: "UNEXPECTED_FRAME - expected content body,
 		got non content body frame instead"
