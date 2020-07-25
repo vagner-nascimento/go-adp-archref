@@ -3,6 +3,7 @@ package amqpdata
 import (
 	"errors"
 	"fmt"
+
 	"github.com/streadway/amqp"
 	"github.com/vagner-nascimento/go-adp-bridge/config"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
@@ -16,7 +17,15 @@ type rabbitPubInfo struct {
 
 var pubConnection *amqpConnection
 
-// TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
+/*
+	TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
+
+	- Error (occours with merch and sell)
+		25/07/2020 08:33:53 - error on publish data into rabbit queue q-accounts:
+		Exception (505) Reason: "UNEXPECTED_FRAME - expected content body,
+		got non content body frame instead"
+
+*/
 func Publish(data []byte, topic string) (err error) {
 	if pubConnection == nil || !pubConnection.isConnected() {
 		if pubConnection, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
