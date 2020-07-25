@@ -1,5 +1,6 @@
 package app
 
+// TODO: receive an interface{} and validate if merchant or seller type
 func createAccount(data []byte) (*Account, error) {
 	return newAccount(data)
 }

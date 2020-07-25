@@ -7,7 +7,7 @@ ENV GO111MODULE=on \
     GOARCH=amd64 \
     GO_ENV=DOCKER
 
-WORKDIR /build
+WORKDIR /app
 
 COPY . .
 
@@ -21,12 +21,3 @@ RUN apk update && apk add bash
 # Move app startup script to its properly folder
 RUN mkdir /scripts
 RUN mv ./docker/wait-for-it.sh /scripts
-RUN mkdir /app
-
-# Copy binary (main) from build to app folder
-RUN cp main /app
-
-# Copy config files into the app folder
-RUN cp -rf config/ /app
-
-WORKDIR /app

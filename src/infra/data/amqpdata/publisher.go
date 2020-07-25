@@ -16,6 +16,7 @@ type rabbitPubInfo struct {
 
 var pubConnection *amqpConnection
 
+// TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
 func Publish(data []byte, topic string) (err error) {
 	if pubConnection == nil || !pubConnection.isConnected() {
 		if pubConnection, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
