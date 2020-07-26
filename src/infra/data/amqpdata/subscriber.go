@@ -23,6 +23,14 @@ func SubscribeConsumer(queueName string, consumerName string, handler func([]byt
 		var rbChan *amqp.Channel
 
 		if rbChan, err = subSingConn.conn.getChannel(); err == nil {
+			onChanClose := rbChan.NotifyClose(make(chan *amqp.Error))
+
+			go func() {
+				for cErr := range onChanClose {
+					logger.Error("sub channel closed", cErr)
+				}
+			}()
+
 			sub := newSubscriberInfo(queueName, consumerName, handler)
 			if err = processMessages(rbChan, sub); err == nil {
 				logger.Info(fmt.Sprintf("consumer %s subscribed into amqp queue %s", consumerName, queueName), nil)
@@ -150,9 +158,11 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 			go func() {
 				for msg := range msgs {
 					fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
-					if success := sub.handler(msg.Body); success {
+					if sub.handler(msg.Body) {
 						msg.Ack(false)
 					} else {
+						Publish(msg.Body, config.Get().Integration.Amqp.Pubs.Fails.Topic)
+
 						msg.Nack(false, false)
 					}
 				}

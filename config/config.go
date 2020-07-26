@@ -46,6 +46,7 @@ type SubsConfig struct {
 
 type PubsConfig struct {
 	CrmAccount TopicConfig `json:"crm-account"`
+	Fails      TopicConfig `json:"fails"`
 }
 
 type AmqIntegrationConfig struct {

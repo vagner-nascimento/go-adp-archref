@@ -32,21 +32,43 @@ var pubConn publisherConnection
 		got non content body frame instead"
 
 */
-func Publish(data []byte, topic string) (isPublished bool, err error) {
-	if pubConn.conn == nil || !pubConn.conn.isConnected() {
-		if pubConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
-			return
-		}
-
+func setPubChannel() (err error) {
+	if pubConn.ch == nil {
 		if pubConn.ch, err = pubConn.conn.getChannel(); err != nil {
 			return
 		}
+
+		onClose := pubConn.ch.NotifyClose(make(chan *amqp.Error))
+
+		go func() {
+			for cErr := range onClose {
+				pubConn.ch = nil
+
+				logger.Error("publisher channel closed", cErr)
+			}
+		}()
 
 		pubConn.pubConfirms = pubConn.ch.NotifyPublish(make(chan amqp.Confirmation, 1))
 
 		if err = pubConn.ch.Confirm(false); err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+func Publish(data []byte, topic string) (isPublished bool, err error) {
+	if pubConn.conn == nil || !pubConn.conn.isConnected() {
+		if pubConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
+			return
+		}
+
+		if err = setPubChannel(); err != nil {
+			return
+		}
+	} else if err = setPubChannel(); err != nil {
+		return
 	}
 
 	logger.Info(fmt.Sprintf("AMQP Publiser - data to send to topic %s: ", topic), string(data))

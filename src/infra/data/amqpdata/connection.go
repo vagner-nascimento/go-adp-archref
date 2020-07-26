@@ -2,7 +2,6 @@ package amqpdata
 
 import (
 	"github.com/streadway/amqp"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 )
 
 type amqpConnection struct {
@@ -13,21 +12,11 @@ type amqpConnection struct {
 func (o *amqpConnection) getChannel() (*amqp.Channel, error) {
 	var err error
 
-	if o.isConnected() && o.ch == nil {
-		if o.ch, err = o.conn.Channel(); err == nil {
-			onClose := o.ch.NotifyClose(make(chan *amqp.Error))
-
-			go func() {
-				for cErr := range onClose {
-					logger.Error("amqp channel closed", cErr)
-
-					o.ch = nil
-				}
-			}()
+	if o.isConnected() {
+		if o.ch == nil {
+			o.ch, err = o.conn.Channel()
 		}
-	}
-
-	if err != nil {
+	} else {
 		o.ch = nil
 	}
 

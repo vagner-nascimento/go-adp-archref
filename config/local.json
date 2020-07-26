@@ -29,6 +29,9 @@
       "pubs": {
         "crm-account": {
           "topic": "q-accounts"
+        },
+        "fails": {
+          "topic": "q-fails"
         }
       }
     },
