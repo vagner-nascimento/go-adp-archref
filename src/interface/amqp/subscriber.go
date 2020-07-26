@@ -1,11 +1,14 @@
-package integration
+package amqpinterface
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
+	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	"github.com/vagner-nascimento/go-adp-bridge/src/provider"
 )
 
 func SubscribeConsumers() error {
-	if connStatus, err := repository.SubscribeConsumers(getSubscriptions(), true); err != nil {
+	sub := provider.GetAmqpSubscriber()
+
+	if connStatus, err := sub.SubscribeConsumers(getSubscriptions(), true); err != nil {
 		return err
 	} else {
 		go watchConnStatus(connStatus)
@@ -14,7 +17,7 @@ func SubscribeConsumers() error {
 	return nil
 }
 
-func getSubscriptions() (subs []repository.Subscription) {
+func getSubscriptions() (subs []amqpintegration.Subscription) {
 	return append(
 		subs,
 		newSellerSub(),
@@ -33,9 +36,11 @@ func watchConnStatus(connStatus <-chan bool) {
 }
 
 func reSubscribeWhenConnIsOn(connStatus <-chan bool) error {
+	sub := provider.GetAmqpSubscriber()
+
 	for isOn := range connStatus {
 		if isOn {
-			if _, err := repository.SubscribeConsumers(getSubscriptions(), false); err != nil {
+			if _, err := sub.SubscribeConsumers(getSubscriptions(), false); err != nil {
 				return err
 			}
 			break

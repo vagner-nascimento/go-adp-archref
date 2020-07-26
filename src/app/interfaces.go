@@ -1,9 +1,11 @@
 package app
 
+import appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
+
 type AccountDataHandler interface {
-	Save(account *Account) error
-	GetMerchantAccounts(merchantId string) ([]MerchantAccount, error)
-	GetMerchant(merchantId string) (Merchant, error)
-	GetAffiliation(affId string) (Affiliation, error)
-	GetMerchantAccount(accId string) (MerchantAccount, error)
+	Save(account *appentity.Account) error
+	GetMerchantAccounts(merchantId string) ([]appentity.MerchantAccount, error)
+	GetMerchant(merchantId string) (appentity.Merchant, error)
+	GetAffiliation(affId string) (appentity.Affiliation, error)
+	GetMerchantAccount(accId string) (appentity.MerchantAccount, error)
 }

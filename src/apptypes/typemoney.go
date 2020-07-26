@@ -1,4 +1,4 @@
-package app
+package apptypes
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 
 const maxDecimals = 2
 
-type money float64
+type Money float64
 
-func (m *money) UnmarshalJSON(b []byte) (err error) {
+func (m *Money) UnmarshalJSON(b []byte) (err error) {
 	s := string(b)
 	var val float64
 	if val, err = strconv.ParseFloat(s, 64); err == nil {
@@ -25,14 +25,14 @@ func (m *money) UnmarshalJSON(b []byte) (err error) {
 		}
 
 		if err == nil {
-			*m = money(val)
+			*m = Money(val)
 		}
 	}
 
 	return
 }
 
-func (m money) MarshalJSON() ([]byte, error) {
+func (m Money) MarshalJSON() ([]byte, error) {
 	s := fmt.Sprintf("%f", m)
 	parts := strings.Split(s, ".")
 	mil := parts[0]

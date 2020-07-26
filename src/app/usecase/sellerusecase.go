@@ -1,8 +1,12 @@
-package app
+package appusecase
 
-import "github.com/vagner-nascimento/go-adp-bridge/src/channel"
+import (
+	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
+	"github.com/vagner-nascimento/go-adp-bridge/src/channel"
+)
 
-func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interface{} {
+func getSellerEnrichmentData(acc appentity.Account, repo app.AccountDataHandler) <-chan interface{} {
 	mCh := make(chan interface{})
 	accCh := make(chan interface{})
 
@@ -11,7 +15,7 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 
 		var (
 			err error
-			mer Merchant
+			mer appentity.Merchant
 		)
 
 		if mer, err = repo.GetMerchant(*acc.MerchantId); err != nil {
@@ -27,7 +31,7 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 
 		var (
 			err  error
-			mAcc MerchantAccount
+			mAcc appentity.MerchantAccount
 		)
 
 		if mAcc, err = repo.GetMerchantAccount(*acc.AccountId); err != nil {
@@ -41,12 +45,12 @@ func getSellerEnrichmentData(acc Account, repo AccountDataHandler) <-chan interf
 	return channel.Multiplex(mCh, accCh)
 }
 
-func enrichSellerAccount(acc *Account, mer *Merchant, mAcc *MerchantAccount) {
+func enrichSellerAccount(acc *appentity.Account, mer *appentity.Merchant, mAcc *appentity.MerchantAccount) {
 	if mer != nil {
 		acc.Country = &mer.Country
 	}
 
 	if mAcc != nil {
-		acc.addMerchantAccount(*mAcc)
+		acc.AddMerchantAccount(*mAcc)
 	}
 }

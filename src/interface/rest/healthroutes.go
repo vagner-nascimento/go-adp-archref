@@ -1,4 +1,4 @@
-package rest
+package restinterface
 
 import (
 	"github.com/go-chi/chi"

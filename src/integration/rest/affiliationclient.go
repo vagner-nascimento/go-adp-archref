@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/config"
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/httpdata"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"github.com/vagner-nascimento/go-adp-bridge/src/singleton"
@@ -14,7 +14,7 @@ type AffiliationsClient struct {
 
 var singAffCli singleton.SingResource
 
-func (mc *AffiliationsClient) GetAffiliation(id string) (affiliation app.Affiliation, err error) {
+func (mc *AffiliationsClient) GetAffiliation(id string) (affiliation appentity.Affiliation, err error) {
 	var (
 		status int
 		data   []byte
@@ -25,7 +25,7 @@ func (mc *AffiliationsClient) GetAffiliation(id string) (affiliation app.Affilia
 	if err = handleResponse(status, err, data, "affiliation"); err != nil {
 		logger.Error("error on try to get affiliation", err)
 	} else {
-		affiliation, err = app.NewAffiliation(data)
+		affiliation, err = appentity.NewAffiliation(data)
 	}
 
 	return

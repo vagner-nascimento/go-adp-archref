@@ -43,6 +43,7 @@ func connectSub() (err error) {
 			}
 
 			if err == nil {
+				logger.Info("amqp subscriber connected", nil)
 				subSingConn.isAlive = true
 			}
 		}
@@ -66,7 +67,7 @@ func retrySubConnection() (err error) {
 			logger.Info(fmt.Sprintf(msgFmt, sleep, currentTry, maxTries), nil)
 			time.Sleep(sleep * time.Second)
 		} else {
-			logger.Info("amqp subscriber successfully reconnected", nil)
+			logger.Info("amqp subscriber reconnected", nil)
 
 			notifySubOnClose()
 

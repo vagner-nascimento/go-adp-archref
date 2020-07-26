@@ -1,25 +1,25 @@
-package app
+package apptypes
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/tools"
 	"time"
 )
 
-type date time.Time
+type Date time.Time
 
 var validDateFormats = []string{
 	"2006-01-02",
 }
 
-func (d *date) UnmarshalJSON(b []byte) error {
+func (d *Date) UnmarshalJSON(b []byte) error {
 	t, err := tools.ParseBytesToFormattedTime(b, validDateFormats)
 	if err == nil {
-		*d = date(t)
+		*d = Date(t)
 	}
 
 	return err
 }
 
-func (d date) MarshalJSON() ([]byte, error) {
+func (d Date) MarshalJSON() ([]byte, error) {
 	return []byte("\"" + time.Time(d).Format("2006-01-02") + "\""), nil
 }

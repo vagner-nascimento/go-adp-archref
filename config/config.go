@@ -3,7 +3,9 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -77,15 +79,26 @@ type Config struct {
 
 var config *Config
 
-func Load(environment string) (err error) {
+func Load() (err error) {
+	env := os.Getenv("GO_ENV")
+
+	if env == "" {
+		env = "LOCAL"
+
+		logger.Info("GO_ENV not informed, using LOCAL", nil)
+	}
+
 	if config == nil {
-		path, _ := filepath.Abs(fmt.Sprintf("config/%s.json", strings.ToLower(environment)))
-		var bytes []byte
-		bytes, err = ioutil.ReadFile(path)
+		path, _ := filepath.Abs(fmt.Sprintf("config/%s.json", strings.ToLower(env)))
+
+		var confData []byte
+		confData, err = ioutil.ReadFile(path)
 
 		if err == nil {
-			if err := json.Unmarshal(bytes, &config); err == nil {
-				config.Env = environment
+			if err = json.Unmarshal(confData, &config); err == nil {
+				logger.Info("**CONFIGS**", string(confData))
+
+				config.Env = env
 			}
 		}
 	}

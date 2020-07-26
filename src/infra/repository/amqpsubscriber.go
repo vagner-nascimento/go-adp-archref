@@ -2,15 +2,13 @@ package repository
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/amqpdata"
+	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
 )
 
-type Subscription interface {
-	GetTopic() string
-	GetConsumer() string
-	GetHandler() func([]byte)
+type amqpSubscriber struct {
 }
 
-func SubscribeConsumers(subs []Subscription, newStatusChannel bool) (connStatus <-chan bool, err error) {
+func (sub amqpSubscriber) SubscribeConsumers(subs []amqpintegration.Subscription, newStatusChannel bool) (connStatus <-chan bool, err error) {
 	for _, sub := range subs {
 		if err = amqpdata.SubscribeConsumer(sub.GetTopic(), sub.GetConsumer(), sub.GetHandler()); err != nil {
 			connStatus = nil
@@ -24,4 +22,8 @@ func SubscribeConsumers(subs []Subscription, newStatusChannel bool) (connStatus 
 	}
 
 	return
+}
+
+func NewAmqpSubscriber() amqpintegration.SubscriptionHandler {
+	return &amqpSubscriber{}
 }

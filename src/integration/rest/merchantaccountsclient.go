@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/config"
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/httpdata"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
 	"github.com/vagner-nascimento/go-adp-bridge/src/singleton"
@@ -12,7 +12,7 @@ type MerchantAccountsClient struct {
 	client *httpdata.HttpClient
 }
 
-func (mc *MerchantAccountsClient) GetMerchantAccount(id string) (mAcc app.MerchantAccount, err error) {
+func (mc *MerchantAccountsClient) GetMerchantAccount(id string) (mAcc appentity.MerchantAccount, err error) {
 	var (
 		status int
 		data   []byte
@@ -23,13 +23,13 @@ func (mc *MerchantAccountsClient) GetMerchantAccount(id string) (mAcc app.Mercha
 	if err = handleResponse(status, err, data, "merchant account"); err != nil {
 		logger.Error("error on try to get merchant account", err)
 	} else {
-		mAcc, err = app.NewMerchantAccount(data)
+		mAcc, err = appentity.NewMerchantAccount(data)
 	}
 
 	return
 }
 
-func (mc *MerchantAccountsClient) GetMerchantAccounts(params map[string]string) (mAccs []app.MerchantAccount, err error) {
+func (mc *MerchantAccountsClient) GetMerchantAccounts(params map[string]string) (mAccs []appentity.MerchantAccount, err error) {
 	var (
 		status int
 		data   []byte
@@ -40,7 +40,7 @@ func (mc *MerchantAccountsClient) GetMerchantAccounts(params map[string]string) 
 	if err = handleResponse(status, err, data, "merchant account"); err != nil {
 		logger.Error("error on try to get merchant account", err)
 	} else {
-		mAccs, err = app.NewMerchantAccounts(data)
+		mAccs, err = appentity.NewMerchantAccounts(data)
 	}
 
 	return

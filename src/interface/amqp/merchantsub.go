@@ -1,10 +1,10 @@
-package integration
+package amqpinterface
 
 import (
 	"github.com/vagner-nascimento/go-adp-bridge/config"
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
+	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
 	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
+	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
 )
 
 type merchantSub struct {
@@ -25,14 +25,14 @@ func (es *merchantSub) GetHandler() func([]byte) {
 	return es.handler
 }
 
-func newMerchantSub() repository.Subscription {
+func newMerchantSub() amqpintegration.Subscription {
 	merchantConfig := config.Get().Integration.Amqp.Subs.Merchant
 
 	return &merchantSub{
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,
 		handler: func(data []byte) {
-			if merchant, err := app.NewMerchant(data); err != nil {
+			if merchant, err := appentity.NewMerchant(data); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else if acc, err := addAccount(merchant); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
