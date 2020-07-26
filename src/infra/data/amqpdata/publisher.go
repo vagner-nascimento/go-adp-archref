@@ -15,7 +15,13 @@ type rabbitPubInfo struct {
 	data    amqp.Publishing
 }
 
-var pubConnection *amqpConnection
+type publisherConnection struct {
+	conn        *amqpConnection
+	ch          *amqp.Channel
+	pubConfirms <-chan amqp.Confirmation
+}
+
+var pubConn publisherConnection
 
 /*
 	TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
@@ -26,9 +32,19 @@ var pubConnection *amqpConnection
 		got non content body frame instead"
 
 */
-func Publish(data []byte, topic string) (err error) {
-	if pubConnection == nil || !pubConnection.isConnected() {
-		if pubConnection, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
+func Publish(data []byte, topic string) (isPublished bool, err error) {
+	if pubConn.conn == nil || !pubConn.conn.isConnected() {
+		if pubConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
+			return
+		}
+
+		if pubConn.ch, err = pubConn.conn.getChannel(); err != nil {
+			return
+		}
+
+		pubConn.pubConfirms = pubConn.ch.NotifyPublish(make(chan amqp.Confirmation, 1))
+
+		if err = pubConn.ch.Confirm(false); err != nil {
 			return
 		}
 	}
@@ -37,29 +53,29 @@ func Publish(data []byte, topic string) (err error) {
 
 	pubInfo := newRabbitPubInfo(data, topic)
 
-	var (
-		rbCh *amqp.Channel
-		qPub amqp.Queue
+	var qPub amqp.Queue
+
+	qPub, err = pubConn.ch.QueueDeclare(
+		pubInfo.queue.Name,
+		pubInfo.queue.Durable,
+		pubInfo.queue.AutoDelete,
+		pubInfo.queue.Exclusive,
+		pubInfo.queue.NoWait,
+		pubInfo.queue.Args,
 	)
 
-	if rbCh, err = pubConnection.getChannel(); err == nil {
-		qPub, err = rbCh.QueueDeclare(
-			pubInfo.queue.Name,
-			pubInfo.queue.Durable,
-			pubInfo.queue.AutoDelete,
-			pubInfo.queue.Exclusive,
-			pubInfo.queue.NoWait,
-			pubInfo.queue.Args,
+	if err == nil {
+		err = pubConn.ch.Publish(
+			pubInfo.message.Exchange,
+			qPub.Name,
+			pubInfo.message.Mandatory,
+			pubInfo.message.Immediate,
+			pubInfo.data,
 		)
 
 		if err == nil {
-			err = rbCh.Publish(
-				pubInfo.message.Exchange,
-				qPub.Name,
-				pubInfo.message.Mandatory,
-				pubInfo.message.Immediate,
-				pubInfo.data,
-			)
+			confirmed := <-pubConn.pubConfirms
+			isPublished = confirmed.Ack
 		}
 	}
 

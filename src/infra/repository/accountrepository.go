@@ -17,11 +17,21 @@ type accountRepository struct {
 }
 
 func (repo *accountRepository) Save(account *appentity.Account) error {
-	if bytes, err := json.Marshal(account); err == nil {
-		return amqpdata.Publish(bytes, repo.topic)
-	} else {
-		return apperror.New("error on convert Account into bytes", err, nil)
+	var (
+		bytes       []byte
+		err         error
+		isPublished bool
+	)
+
+	if bytes, err = json.Marshal(account); err == nil {
+		isPublished, err = amqpdata.Publish(bytes, repo.topic)
+
+		if err == nil && !isPublished {
+			err = apperror.New("account not saved", nil, nil)
+		}
 	}
+
+	return err
 }
 
 func (repo *accountRepository) GetMerchantAccount(accId string) (appentity.MerchantAccount, error) {

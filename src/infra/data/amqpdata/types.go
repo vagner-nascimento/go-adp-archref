@@ -26,6 +26,6 @@ type (
 	rabbitSubInfo struct {
 		queue   queueInfo
 		message messageInfo
-		handler func([]byte)
+		handler func([]byte) bool
 	}
 )

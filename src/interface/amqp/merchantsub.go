@@ -10,7 +10,7 @@ import (
 type merchantSub struct {
 	topic    string
 	consumer string
-	handler  func(data []byte)
+	handler  func(data []byte) bool
 }
 
 func (es *merchantSub) GetTopic() string {
@@ -21,7 +21,7 @@ func (es *merchantSub) GetConsumer() string {
 	return es.consumer
 }
 
-func (es *merchantSub) GetHandler() func([]byte) {
+func (es *merchantSub) GetHandler() func([]byte) bool {
 	return es.handler
 }
 
@@ -31,14 +31,17 @@ func newMerchantSub() amqpintegration.Subscription {
 	return &merchantSub{
 		topic:    merchantConfig.Topic,
 		consumer: merchantConfig.Consumer,
-		handler: func(data []byte) {
+		handler: func(data []byte) (success bool) {
 			if merchant, err := appentity.NewMerchant(data); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else if acc, err := addAccount(merchant); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else {
 				logger.Info("MerchantSub - account added", acc)
+				success = true
 			}
+
+			return
 		},
 	}
 }

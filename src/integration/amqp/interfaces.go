@@ -7,5 +7,5 @@ type SubscriptionHandler interface {
 type Subscription interface {
 	GetTopic() string
 	GetConsumer() string
-	GetHandler() func([]byte)
+	GetHandler() func([]byte) bool
 }

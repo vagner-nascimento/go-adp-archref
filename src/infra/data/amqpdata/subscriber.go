@@ -18,7 +18,7 @@ type subSingletonConnection struct {
 
 var subSingConn = subSingletonConnection{}
 
-func SubscribeConsumer(queueName string, consumerName string, handler func([]byte)) (err error) {
+func SubscribeConsumer(queueName string, consumerName string, handler func([]byte) bool) (err error) {
 	if err = connectSub(); err == nil {
 		var rbChan *amqp.Channel
 
@@ -103,7 +103,7 @@ func notifySubOnClose() {
 	}()
 }
 
-func newSubscriberInfo(queueName string, consumerName string, handler func([]byte)) rabbitSubInfo {
+func newSubscriberInfo(queueName string, consumerName string, handler func([]byte) bool) rabbitSubInfo {
 	return rabbitSubInfo{
 		queue: queueInfo{
 			Name:         queueName,
@@ -114,7 +114,7 @@ func newSubscriberInfo(queueName string, consumerName string, handler func([]byt
 		},
 		message: messageInfo{
 			Consumer:  consumerName,
-			AutoAct:   true,
+			AutoAct:   false,
 			Exclusive: false,
 			Local:     false,
 			NoWait:    false,
@@ -150,7 +150,11 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 			go func() {
 				for msg := range msgs {
 					fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
-					sub.handler(msg.Body)
+					if success := sub.handler(msg.Body); success {
+						msg.Ack(false)
+					} else {
+						msg.Nack(false, false)
+					}
 				}
 			}()
 		}
