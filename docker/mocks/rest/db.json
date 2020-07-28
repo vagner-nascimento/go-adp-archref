@@ -23,12 +23,16 @@
     {
       "id": "m_1",
       "name": "Carmen Flowers",
-      "country": "US"
+      "country": "US",
+      "billing_day": 2,
+      "credit_limit": 4000000
     },
     {
       "id": "m_2",
       "name": "Center Shop",
-      "country": "UK"
+      "country": "UK",
+      "billing_day": 30,
+      "credit_limit": 6000000
     }
   ],
   "affiliations": [

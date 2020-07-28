@@ -34,7 +34,7 @@ func newMerchantSub() amqpintegration.Subscription {
 		handler: func(data []byte) (success bool) {
 			if merchant, err := appentity.NewMerchant(data); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
-			} else if acc, err := addAccount(merchant); err != nil {
+			} else if acc, err := addAccount(*merchant); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else {
 				logger.Info("MerchantSub - account added", acc)

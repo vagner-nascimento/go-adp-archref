@@ -15,7 +15,7 @@ func getSellerEnrichmentData(acc appentity.Account, repo app.AccountDataHandler)
 
 		var (
 			err error
-			mer appentity.Merchant
+			mer *appentity.Merchant
 		)
 
 		if mer, err = repo.GetMerchant(*acc.MerchantId); err != nil {
@@ -23,7 +23,7 @@ func getSellerEnrichmentData(acc appentity.Account, repo app.AccountDataHandler)
 			return
 		}
 
-		mCh <- mer
+		mCh <- *mer
 	}()
 
 	go func() {

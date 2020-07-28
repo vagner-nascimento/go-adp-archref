@@ -42,7 +42,7 @@ func (repo *accountRepository) GetMerchantAccounts(merchantId string) ([]appenti
 	return repo.merchantAccCli.GetMerchantAccounts(map[string]string{"merchant_id": merchantId})
 }
 
-func (repo *accountRepository) GetMerchant(merchantId string) (appentity.Merchant, error) {
+func (repo *accountRepository) GetMerchant(merchantId string) (*appentity.Merchant, error) {
 	return repo.merchantsCli.GetMerchant(merchantId)
 }
 

@@ -14,7 +14,7 @@ type MerchantsClient struct {
 
 var singMerchCli singleton.SingResource
 
-func (mc *MerchantsClient) GetMerchant(id string) (merchant appentity.Merchant, err error) {
+func (mc *MerchantsClient) GetMerchant(id string) (merchant *appentity.Merchant, err error) {
 	var (
 		status int
 		data   []byte
