@@ -10,29 +10,21 @@ import (
 	"time"
 )
 
-type subSingletonConnection struct {
-	conn    *amqpConnection
+type subscriptionConnection struct {
 	connect sync.Once
+	conn    *amqp.Connection
+	ch      *amqp.Channel
 	isAlive bool
 }
 
-var subSingConn = subSingletonConnection{}
+var subConn subscriptionConnection
 
 func SubscribeConsumer(queueName string, consumerName string, handler func([]byte) bool) (err error) {
-	if err = connectSub(); err == nil {
-		var rbChan *amqp.Channel
-
-		if rbChan, err = subSingConn.conn.getChannel(); err == nil {
-			onChanClose := rbChan.NotifyClose(make(chan *amqp.Error))
-
-			go func() {
-				for cErr := range onChanClose {
-					logger.Error("sub channel closed", cErr)
-				}
-			}()
-
+	if err = subStartConnection(); err == nil {
+		if err = subSetChannel(); err == nil {
 			sub := newSubscriberInfo(queueName, consumerName, handler)
-			if err = processMessages(rbChan, sub); err == nil {
+
+			if err = processMessages(sub); err == nil {
 				logger.Info(fmt.Sprintf("consumer %s subscribed into amqp queue %s", consumerName, queueName), nil)
 			}
 		}
@@ -41,26 +33,82 @@ func SubscribeConsumer(queueName string, consumerName string, handler func([]byt
 	return
 }
 
-func connectSub() (err error) {
-	subSingConn.connect.Do(func() {
-		if subSingConn.conn == nil || !subSingConn.conn.isConnected() {
-			if subSingConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
-				err = retrySubConnection()
-			} else {
-				notifySubOnClose()
-			}
+// OldListenSubConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
+// The connection still alive even if it lost the connection. It will die only if all connection retries were failed.
+// When all reties fails, the channel is closed
+func ListenSubConnection() <-chan bool {
+	status := make(chan bool)
 
-			if err == nil {
-				logger.Info("amqp subscriber connected", nil)
-				subSingConn.isAlive = true
-			}
+	go func() {
+		for subConn.isAlive {
+			status <- subConn.conn != nil && !subConn.conn.IsClosed()
+		}
+
+		close(status)
+	}()
+
+	return status
+}
+
+func subStartConnection() (err error) {
+	subConn.connect.Do(func() {
+		if err = subConnect(); err != nil {
+			err = subRetryConnection()
+		}
+
+		if err == nil {
+			logger.Info("AMQP sub successfully connected", nil)
+			subConn.isAlive = true
+
+			subSetChannel()
+			subRetryConnectOnClose()
 		}
 	})
 
 	return
 }
 
-func retrySubConnection() (err error) {
+func subConnect() (err error) {
+	subConn.conn, err = amqp.Dial(config.Get().Data.Amqp.ConnStr)
+
+	return
+}
+
+func subSetChannel() (err error) {
+	if subConn.ch == nil {
+		if subConn.ch, err = subConn.conn.Channel(); err == nil {
+			closed := subConn.ch.NotifyClose(make(chan *amqp.Error, 1))
+
+			go func() {
+				for cErr := range closed {
+					if cErr != nil {
+						subConn.ch = nil
+					}
+				}
+			}()
+		}
+	}
+
+	return
+}
+
+func subRetryConnectOnClose() {
+	errs := subConn.conn.NotifyClose(make(chan *amqp.Error, 1))
+
+	go func() {
+		for cErr := range errs {
+			if cErr != nil {
+				logger.Error("AMQP sub connection was closed", cErr)
+
+				subConn.ch = nil
+
+				subRetryConnection()
+			}
+		}
+	}()
+}
+
+func subRetryConnection() (err error) {
 	sleep := config.Get().Data.Amqp.ConnRetry.Sleep
 	maxTries := 1
 
@@ -69,46 +117,33 @@ func retrySubConnection() (err error) {
 	}
 
 	for currentTry := 1; currentTry <= maxTries; currentTry++ {
-		if subSingConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
+		if err = subConnect(); err != nil {
 			msgFmt := "waiting %d seconds before try to reconnect amqp subscriber %d of %d tries"
 
 			logger.Info(fmt.Sprintf(msgFmt, sleep, currentTry, maxTries), nil)
 			time.Sleep(sleep * time.Second)
 		} else {
-			logger.Info("amqp subscriber reconnected", nil)
+			logger.Info("AMQP subscriber reconnected", nil)
 
-			notifySubOnClose()
+			subSetChannel()
+			subRetryConnectOnClose()
 
 			break
 		}
 	}
 
 	if err != nil {
-		logger.Info("sub amqp connection was lost forerver", err)
+		logger.Info("AMQP subscriber connection was lost forerver", err)
 
-		subSingConn.isAlive = false
+		subConn.isAlive = false
 
 		if config.Get().Data.Amqp.ExitOnLostConnection {
-			logger.Info("sub amqp exit on lost conn is true. shutting down the application", nil)
+			logger.Info("AMQP exit on lost conn is true. shutting down the application", nil)
 			os.Exit(1)
 		}
 	}
 
 	return
-}
-
-func notifySubOnClose() {
-	errs := subSingConn.conn.conn.NotifyClose(make(chan *amqp.Error))
-
-	go func() {
-		for cErr := range errs {
-			if cErr != nil {
-				logger.Error("amqp sub connection was closed", cErr)
-
-				retrySubConnection()
-			}
-		}
-	}()
 }
 
 func newSubscriberInfo(queueName string, consumerName string, handler func([]byte) bool) rabbitSubInfo {
@@ -131,9 +166,10 @@ func newSubscriberInfo(queueName string, consumerName string, handler func([]byt
 	}
 }
 
-func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
+func processMessages(sub rabbitSubInfo) (err error) {
 	var q amqp.Queue
-	q, err = ch.QueueDeclare(
+
+	q, err = subConn.ch.QueueDeclare(
 		sub.queue.Name,
 		sub.queue.Durable,
 		sub.queue.DeleteUnused,
@@ -144,7 +180,7 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 
 	if err == nil {
 		var msgs <-chan amqp.Delivery
-		msgs, err = ch.Consume(
+		msgs, err = subConn.ch.Consume(
 			q.Name,
 			sub.message.Consumer,
 			sub.message.AutoAct,
@@ -170,21 +206,4 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 	}
 
 	return
-}
-
-// ListenSubConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
-// The connection still alive even if it lost the connection. It will die only if all connection retries were failed.
-// When all reties fails, the channel is closed
-func ListenSubConnection() <-chan bool {
-	status := make(chan bool)
-
-	go func() {
-		for subSingConn.isAlive {
-			status <- subSingConn.conn != nil && subSingConn.conn.isConnected()
-		}
-
-		close(status)
-	}()
-
-	return status
 }
