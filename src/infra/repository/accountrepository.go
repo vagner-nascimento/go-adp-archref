@@ -11,6 +11,7 @@ import (
 
 type accountRepository struct {
 	topic           string
+	publisher       *amqpdata.AmqpPublisher
 	merchantAccCli  *rest.MerchantAccountsClient
 	merchantsCli    *rest.MerchantsClient
 	affiliationsCli *rest.AffiliationsClient
@@ -24,7 +25,7 @@ func (repo *accountRepository) Save(account *appentity.Account) error {
 	)
 
 	if bytes, err = json.Marshal(account); err == nil {
-		isPublished, err = amqpdata.Publish(bytes, repo.topic)
+		isPublished, err = repo.publisher.Publish(bytes) //amqpdata.Publish(bytes, repo.topic)
 
 		if err == nil && !isPublished {
 			err = apperror.New("account not saved", nil, nil)
@@ -52,7 +53,7 @@ func (repo *accountRepository) GetAffiliation(affId string) (appentity.Affiliati
 
 func NewAccountRepository() *accountRepository {
 	return &accountRepository{
-		topic:           config.Get().Integration.Amqp.Pubs.CrmAccount.Topic,
+		publisher:       amqpdata.NewAmqpPublisher(config.Get().Integration.Amqp.Pubs.CrmAccount.Topic),
 		merchantAccCli:  rest.GetMerchantAccClient(),
 		merchantsCli:    rest.GetMerchantsClient(),
 		affiliationsCli: rest.GetAffiliationsClient(),

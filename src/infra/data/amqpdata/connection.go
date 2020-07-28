@@ -4,6 +4,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// TODO: move it to subscriber and delete connection file
 type amqpConnection struct {
 	conn *amqp.Connection
 	ch   *amqp.Channel

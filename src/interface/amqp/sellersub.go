@@ -1,11 +1,11 @@
 package amqpinterface
 
 import (
-	"encoding/json"
 	"github.com/vagner-nascimento/go-enriching-adp/config"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
+	"github.com/vagner-nascimento/go-enriching-adp/src/provider"
 )
 
 type sellerSub struct {
@@ -28,6 +28,7 @@ func (es *sellerSub) GetHandler() func([]byte) bool {
 
 func newSellerSub() amqpintegration.Subscription {
 	sellerConfig := config.Get().Integration.Amqp.Subs.Seller
+	accAdp := provider.GetAccountAdapter()
 
 	return &sellerSub{
 		topic:    sellerConfig.Topic,
@@ -35,13 +36,11 @@ func newSellerSub() amqpintegration.Subscription {
 		handler: func(data []byte) (success bool) {
 			if seller, err := appentity.NewSeller(data); err != nil {
 				logger.Error("SellerSub - error on try to add account", err)
-			} else if acc, err := addAccount(*seller); err != nil {
+			} else if acc, err := accAdp.AddAccount(*seller); err != nil {
 				logger.Error("SellerSub - error on try to add account", err)
 			} else {
+				logger.Info("SellerSub - account added", acc)
 				success = true
-				bytes, _ := json.Marshal(acc)
-
-				logger.Info("SellerSub - account added", string(bytes))
 			}
 
 			return

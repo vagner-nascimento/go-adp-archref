@@ -1,13 +1,13 @@
 package amqpdata
 
 import (
-	"errors"
 	"fmt"
-
 	"github.com/streadway/amqp"
 	"github.com/vagner-nascimento/go-enriching-adp/config"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 )
+
+var pubConn *amqp.Connection
 
 type rabbitPubInfo struct {
 	queue   queueInfo
@@ -15,96 +15,89 @@ type rabbitPubInfo struct {
 	data    amqp.Publishing
 }
 
-type publisherConnection struct {
-	conn        *amqpConnection
-	ch          *amqp.Channel
-	pubConfirms <-chan amqp.Confirmation
+type AmqpPublisher struct {
+	topic         string
+	ch            *amqp.Channel
+	confirmations <-chan amqp.Confirmation
 }
 
-var pubConn publisherConnection
+func (pub *AmqpPublisher) Publish(data []byte) (isPublished bool, err error) {
+	if err = pub.assertChannel(); err == nil {
+		logger.Info(fmt.Sprintf("AMQP Publiser - data to send to topic %s: ", pub.topic), string(data))
 
-/*
-	TODO: some messages are lost, for instance, sent 4k msgs and only 3984 are published into q-accounts
+		pubInfo := newRabbitPubInfo(data, pub.topic)
 
-	- Possible Error (occours with merch and sell):
-		25/07/2020 08:33:53 - error on publish data into rabbit queue q-accounts:
-		Exception (505) Reason: "UNEXPECTED_FRAME - expected content body,
-		got non content body frame instead"
+		var qPub amqp.Queue
 
-*/
-func setPubChannel() (err error) {
-	if pubConn.ch == nil {
-		if pubConn.ch, err = pubConn.conn.getChannel(); err != nil {
-			return
-		}
+		qPub, err = pub.ch.QueueDeclare(
+			pubInfo.queue.Name,
+			pubInfo.queue.Durable,
+			pubInfo.queue.AutoDelete,
+			pubInfo.queue.Exclusive,
+			pubInfo.queue.NoWait,
+			pubInfo.queue.Args,
+		)
 
-		onClose := pubConn.ch.NotifyClose(make(chan *amqp.Error))
+		if err == nil {
+			err = pub.ch.Publish(
+				pubInfo.message.Exchange,
+				qPub.Name,
+				pubInfo.message.Mandatory,
+				pubInfo.message.Immediate,
+				pubInfo.data,
+			)
 
-		go func() {
-			for cErr := range onClose {
-				pubConn.ch = nil
-
-				logger.Error("publisher channel closed", cErr)
+			if err == nil {
+				confirmed := <-pub.confirmations
+				isPublished = confirmed.Ack
 			}
-		}()
-
-		pubConn.pubConfirms = pubConn.ch.NotifyPublish(make(chan amqp.Confirmation, 1))
-
-		if err = pubConn.ch.Confirm(false); err != nil {
-			return
 		}
 	}
 
 	return
 }
 
-func Publish(data []byte, topic string) (isPublished bool, err error) {
-	if pubConn.conn == nil || !pubConn.conn.isConnected() {
-		if pubConn.conn, err = newAmqpConnection(config.Get().Data.Amqp.ConnStr); err != nil {
-			return
-		}
+func (pub *AmqpPublisher) assertChannel() (err error) {
+	if err = pub.assertConnection(); err == nil {
+		if pub.ch == nil {
+			if pub.ch, err = pubConn.Channel(); err == nil {
+				chErrs := pub.ch.NotifyClose(make(chan *amqp.Error, 1))
 
-		if err = setPubChannel(); err != nil {
-			return
-		}
-	} else if err = setPubChannel(); err != nil {
-		return
-	}
+				go func() {
+					for cErr := range chErrs {
+						if cErr != nil {
+							logger.Error(fmt.Sprintf("AMQP pub channel of %s topic was closed", pub.topic), cErr)
 
-	logger.Info(fmt.Sprintf("AMQP Publiser - data to send to topic %s: ", topic), string(data))
+							pub.ch = nil
+						}
+					}
+				}()
 
-	pubInfo := newRabbitPubInfo(data, topic)
+				pub.confirmations = pub.ch.NotifyPublish(make(chan amqp.Confirmation, 1))
 
-	var qPub amqp.Queue
-
-	qPub, err = pubConn.ch.QueueDeclare(
-		pubInfo.queue.Name,
-		pubInfo.queue.Durable,
-		pubInfo.queue.AutoDelete,
-		pubInfo.queue.Exclusive,
-		pubInfo.queue.NoWait,
-		pubInfo.queue.Args,
-	)
-
-	if err == nil {
-		err = pubConn.ch.Publish(
-			pubInfo.message.Exchange,
-			qPub.Name,
-			pubInfo.message.Mandatory,
-			pubInfo.message.Immediate,
-			pubInfo.data,
-		)
-
-		if err == nil {
-			confirmed := <-pubConn.pubConfirms
-			isPublished = confirmed.Ack
+				err = pub.ch.Confirm(false)
+			}
 		}
 	}
 
-	if err != nil {
-		msg := fmt.Sprintf("error on publish data into rabbit queue %s", topic)
-		logger.Error(msg, err)
-		err = errors.New(msg)
+	return
+}
+
+func (pub *AmqpPublisher) assertConnection() (err error) {
+	if pubConn == nil || pubConn.IsClosed() {
+		if pubConn, err = amqp.Dial(config.Get().Data.Amqp.ConnStr); err == nil {
+			pubConnErrs := pubConn.NotifyClose(make(chan *amqp.Error, 1))
+
+			go func() {
+				for cErr := range pubConnErrs {
+					if cErr != nil {
+						logger.Error("AMQP pub connection was closed", cErr)
+
+						pub.ch = nil
+					}
+				}
+			}()
+		}
 	}
 
 	return
@@ -129,5 +122,11 @@ func newRabbitPubInfo(data []byte, topic string) rabbitPubInfo {
 			ContentType: "application/json",
 			Body:        data,
 		},
+	}
+}
+
+func NewAmqpPublisher(topic string) *AmqpPublisher {
+	return &AmqpPublisher{
+		topic: topic,
 	}
 }

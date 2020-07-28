@@ -5,6 +5,7 @@ import (
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
+	"github.com/vagner-nascimento/go-enriching-adp/src/provider"
 )
 
 type merchantSub struct {
@@ -27,6 +28,7 @@ func (es *merchantSub) GetHandler() func([]byte) bool {
 
 func newMerchantSub() amqpintegration.Subscription {
 	merchantConfig := config.Get().Integration.Amqp.Subs.Merchant
+	accAdp := provider.GetAccountAdapter()
 
 	return &merchantSub{
 		topic:    merchantConfig.Topic,
@@ -34,7 +36,7 @@ func newMerchantSub() amqpintegration.Subscription {
 		handler: func(data []byte) (success bool) {
 			if merchant, err := appentity.NewMerchant(data); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
-			} else if acc, err := addAccount(*merchant); err != nil {
+			} else if acc, err := accAdp.AddAccount(*merchant); err != nil {
 				logger.Error("MerchantSub - error on try to add account", err)
 			} else {
 				logger.Info("MerchantSub - account added", acc)

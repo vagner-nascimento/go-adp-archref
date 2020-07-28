@@ -15,7 +15,12 @@ import (
 func main() {
 	setTestParams()
 	runWithoutConsume()
-	//runWithConsume()
+	if singletonConn.conn != nil && !singletonConn.conn.IsClosed() {
+		singletonConn.conn.Close()
+		fmt.Println("AMQP connection closed")
+	} else {
+		fmt.Println("AMQP connection ALREADY closed")
+	}
 }
 
 var (
@@ -44,48 +49,6 @@ func setTestParams() {
 	testTimeOut = time.Minute * time.Duration(minutes)
 }
 
-func runWithConsume() {
-	if err, consumed := consumeAccounts(); err == nil {
-		start := time.Now()
-		errs := multiplexErrors(
-			pubMerchants(qtdMerchants),
-			pubSellers(qtdSellers),
-		)
-
-		for err := range errs {
-			if err != nil {
-				fmt.Println("pub err")
-				panic(err)
-			}
-		}
-
-		totalSent := qtdSellers + qtdMerchants
-		success := false
-		timeLimit := time.Now().Add(testTimeOut)
-
-		fmt.Println("waiting for accounts consume")
-
-		for time.Now().Before(timeLimit) {
-			if *consumed == totalSent {
-				success = true
-				break
-			}
-		}
-
-		if success {
-			fmt.Println(fmt.Sprintf("SUCCESS: STRESS TESTS COMPLETED IN %s", time.Since(start)))
-			fmt.Println(fmt.Sprintf("ALL %d MESSAGES PROCESSED", totalSent))
-		} else {
-			fmt.Println("TEST FAILED")
-			fmt.Println(fmt.Sprintf("PROCESSED %d OF %d MESSAGES", *consumed, totalSent))
-		}
-	} else {
-		fmt.Println("error on consume q-accounts", err)
-	}
-
-	os.Exit(0)
-}
-
 func runWithoutConsume() {
 	errs := multiplexErrors(
 		pubMerchants(qtdMerchants),
@@ -100,6 +63,62 @@ func runWithoutConsume() {
 	}
 
 	fmt.Println(fmt.Sprintf("all %d messages were published", qtdMerchants+qtdSellers))
+}
+
+func pubMerchants(qtd int) <-chan error {
+	errs := make(chan error)
+
+	go func() {
+		json, err := os.Open("./support/mocks/merchant.json")
+		if err == nil {
+			defer json.Close()
+
+			if data, err := ioutil.ReadAll(json); err == nil {
+				for i := 1; i <= qtd; i++ {
+					fmt.Println(fmt.Sprintf("publishing merchant %d of %d", i, qtd))
+					if err := publishMsg(data, "q-merchants"); err != nil {
+						err = errors.New("q-merchants err: " + err.Error())
+						errs <- err
+					}
+				}
+			}
+		}
+
+		errs <- err
+
+		close(errs)
+	}()
+
+	return errs
+}
+
+func pubSellers(qtd int) <-chan error {
+	errs := make(chan error)
+
+	go func() {
+		json, err := os.Open("./support/mocks/seller.json")
+		if err == nil {
+			defer json.Close()
+
+			fmt.Println("file seller.json successfully opened")
+
+			if data, err := ioutil.ReadAll(json); err == nil {
+				for i := 1; i <= qtd; i++ {
+					fmt.Println(fmt.Sprintf("publishing seller %d of %d", i, qtd))
+					if err := publishMsg(data, "q-sellers"); err != nil {
+						err = errors.New("q-sellers err: " + err.Error())
+						errs <- err
+					}
+				}
+			}
+		}
+
+		errs <- err
+
+		close(errs)
+	}()
+
+	return errs
 }
 
 // AMQP
@@ -173,106 +192,6 @@ func publishMsg(data []byte, topic string) error {
 	}
 
 	return err
-}
-
-func pubMerchants(qtd int) <-chan error {
-	errs := make(chan error)
-
-	go func() {
-		json, err := os.Open("./support/mocks/merchant.json")
-		if err == nil {
-			defer json.Close()
-
-			if data, err := ioutil.ReadAll(json); err == nil {
-				for i := 1; i <= qtd; i++ {
-					fmt.Println(fmt.Sprintf("publishing merchant %d of %d", i, qtd))
-					if err := publishMsg(data, "q-merchants"); err != nil {
-						err = errors.New("q-merchants err: " + err.Error())
-						errs <- err
-					}
-				}
-			}
-		}
-
-		errs <- err
-
-		close(errs)
-	}()
-
-	return errs
-}
-
-func pubSellers(qtd int) <-chan error {
-	errs := make(chan error)
-
-	go func() {
-		json, err := os.Open("./support/mocks/seller.json")
-		if err == nil {
-			defer json.Close()
-
-			fmt.Println("file seller.json successfully opened")
-
-			if data, err := ioutil.ReadAll(json); err == nil {
-				for i := 1; i <= qtd; i++ {
-					fmt.Println(fmt.Sprintf("publishing seller %d of %d", i, qtd))
-					if err := publishMsg(data, "q-sellers"); err != nil {
-						err = errors.New("q-sellers err: " + err.Error())
-						errs <- err
-					}
-				}
-			}
-		}
-
-		errs <- err
-
-		close(errs)
-	}()
-
-	return errs
-}
-
-func consumeAccounts() (error, *int) {
-	var (
-		ch        *amqp.Channel
-		processed int
-		err       error
-	)
-
-	if ch, err = newChannel(); err == nil {
-		var q amqp.Queue
-		q, err = ch.QueueDeclare(
-			"q-accounts",
-			false,
-			false,
-			false,
-			false,
-			nil,
-		)
-
-		if err == nil {
-			var msgs <-chan amqp.Delivery
-			msgs, err = ch.Consume(
-				q.Name,
-				"c-stress",
-				true,
-				false,
-				false,
-				false,
-				nil,
-			)
-
-			if err == nil {
-				go func() {
-					for _ = range msgs {
-						processed++
-						fmt.Println(fmt.Sprintf("processed %d messages", processed))
-					}
-				}()
-			}
-		}
-	}
-
-	return err, &processed
 }
 
 // Channel multiplexer

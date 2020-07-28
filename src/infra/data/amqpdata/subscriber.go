@@ -158,11 +158,10 @@ func processMessages(ch *amqp.Channel, sub rabbitSubInfo) (err error) {
 			go func() {
 				for msg := range msgs {
 					fmt.Println(fmt.Sprintf("message received from %s. body:\r\n %s", q.Name, string(msg.Body)))
+
 					if sub.handler(msg.Body) {
 						msg.Ack(false)
 					} else {
-						Publish(msg.Body, config.Get().Integration.Amqp.Pubs.Fails.Topic)
-
 						msg.Nack(false, false)
 					}
 				}
