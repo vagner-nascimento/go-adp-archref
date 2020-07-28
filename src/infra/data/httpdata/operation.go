@@ -2,7 +2,7 @@ package httpdata
 
 import (
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	"io/ioutil"
 	"net/http"
 )

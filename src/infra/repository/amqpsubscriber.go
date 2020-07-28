@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/amqpdata"
-	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqpdata"
+	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
 )
 
 type amqpSubscriber struct {

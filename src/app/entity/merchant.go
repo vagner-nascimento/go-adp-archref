@@ -2,19 +2,19 @@ package appentity
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apptypes"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apptype"
 )
 
 type (
 	Merchant struct {
-		Id          string            `json:"id"`
-		Name        string            `json:"name"`
-		Country     string            `json:"country"`
-		UpdatedDate apptypes.DateTime `json:"updated_date"`
-		BillingDay  int               `json:"billing_day"`
-		IsActive    bool              `json:"is_active"`
-		CreditLimit apptypes.Money    `json:"credit_limit"`
+		Id          string           `json:"id"`
+		Name        string           `json:"name"`
+		Country     string           `json:"country"`
+		UpdatedDate apptype.DateTime `json:"updated_date"`
+		BillingDay  int              `json:"billing_day"`
+		IsActive    bool             `json:"is_active"`
+		CreditLimit apptype.Money    `json:"credit_limit"`
 	}
 )
 

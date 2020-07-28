@@ -2,11 +2,11 @@ package repository
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/amqpdata"
-	"github.com/vagner-nascimento/go-adp-bridge/src/integration/rest"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqpdata"
+	"github.com/vagner-nascimento/go-enriching-adp/src/integration/rest"
 )
 
 type accountRepository struct {

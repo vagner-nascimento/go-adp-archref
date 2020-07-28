@@ -1,6 +1,6 @@
 package app
 
-import appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
+import appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 
 type AccountDataHandler interface {
 	Save(account *appentity.Account) error

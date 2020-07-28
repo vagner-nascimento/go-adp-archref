@@ -1,9 +1,9 @@
 package provider
 
 import (
-	appadapter "github.com/vagner-nascimento/go-adp-bridge/src/app/adapter"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/repository"
-	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	appadapter "github.com/vagner-nascimento/go-enriching-adp/src/app/adapter"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/repository"
+	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
 )
 
 func GetAccountAdapter() appadapter.AccountAdapter {

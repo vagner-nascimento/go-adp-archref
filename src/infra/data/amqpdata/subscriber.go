@@ -3,8 +3,8 @@ package amqpdata
 import (
 	"fmt"
 	"github.com/streadway/amqp"
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	"os"
 	"sync"
 	"time"

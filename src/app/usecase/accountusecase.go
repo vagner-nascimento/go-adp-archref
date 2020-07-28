@@ -1,9 +1,9 @@
 package appusecase
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
 )
 
 func CreateAccount(entity interface{}) (*appentity.Account, error) {

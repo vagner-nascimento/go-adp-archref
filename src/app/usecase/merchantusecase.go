@@ -1,9 +1,9 @@
 package appusecase
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	"github.com/vagner-nascimento/go-adp-bridge/src/channel"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/channel"
 )
 
 func getMerchantEnrichmentData(acc appentity.Account, repo app.AccountDataHandler) <-chan interface{} {

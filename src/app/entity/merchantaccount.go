@@ -2,7 +2,7 @@ package appentity
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
 )
 
 type MerchantAccount struct {

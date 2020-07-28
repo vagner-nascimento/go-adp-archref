@@ -2,19 +2,19 @@ package appentity
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apptypes"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apptype"
 )
 
 type Seller struct {
-	Id                string         `json:"id"`
-	MerchantId        string         `json:"merchant_id"`
-	MerchantAccountId string         `json:"merchant_account_id"`
-	Name              string         `json:"name"`
-	LegalDocument     string         `json:"legal_document"`
-	LastPaymentDate   *apptypes.Date `json:"last_payment_date"`
-	IsActive          bool           `json:"is_active"`
-	Contacts          []contact      `json:"contacts"`
+	Id                string        `json:"id"`
+	MerchantId        string        `json:"merchant_id"`
+	MerchantAccountId string        `json:"merchant_account_id"`
+	Name              string        `json:"name"`
+	LegalDocument     string        `json:"legal_document"`
+	LastPaymentDate   *apptype.Date `json:"last_payment_date"`
+	IsActive          bool          `json:"is_active"`
+	Contacts          []contact     `json:"contacts"`
 }
 
 // TODO: avoid to create if data is a Merchant

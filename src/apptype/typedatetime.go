@@ -1,7 +1,7 @@
-package apptypes
+package apptype
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/tools"
+	"github.com/vagner-nascimento/go-enriching-adp/src/tools"
 	"time"
 )
 

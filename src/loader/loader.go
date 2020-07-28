@@ -1,9 +1,9 @@
 package loader
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	amqpinterface "github.com/vagner-nascimento/go-adp-bridge/src/interface/amqp"
-	restinterface "github.com/vagner-nascimento/go-adp-bridge/src/interface/rest"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	amqpinterface "github.com/vagner-nascimento/go-enriching-adp/src/interface/amqp"
+	restinterface "github.com/vagner-nascimento/go-enriching-adp/src/interface/rest"
 
 	"log"
 )

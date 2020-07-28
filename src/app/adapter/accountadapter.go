@@ -1,10 +1,10 @@
 package appadapter
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/app"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	appusecase "github.com/vagner-nascimento/go-adp-bridge/src/app/usecase"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	appusecase "github.com/vagner-nascimento/go-enriching-adp/src/app/usecase"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 )
 
 type AccountAdapter struct {

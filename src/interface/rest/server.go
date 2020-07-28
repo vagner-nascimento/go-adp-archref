@@ -3,9 +3,9 @@ package restinterface
 import (
 	"fmt"
 	"github.com/go-chi/chi"
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	"net/http"
 )
 

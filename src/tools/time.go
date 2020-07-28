@@ -2,7 +2,7 @@ package tools
 
 import (
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/apperror"
+	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
 	"strings"
 	"time"
 )

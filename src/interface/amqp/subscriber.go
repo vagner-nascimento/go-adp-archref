@@ -1,8 +1,8 @@
 package amqpinterface
 
 import (
-	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
-	"github.com/vagner-nascimento/go-adp-bridge/src/provider"
+	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
+	"github.com/vagner-nascimento/go-enriching-adp/src/provider"
 )
 
 func SubscribeConsumers() error {

@@ -3,7 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	"io/ioutil"
 	"os"
 	"path/filepath"

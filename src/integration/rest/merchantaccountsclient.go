@@ -1,11 +1,11 @@
 package rest
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/data/httpdata"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
-	"github.com/vagner-nascimento/go-adp-bridge/src/singleton"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/httpdata"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
+	"github.com/vagner-nascimento/go-enriching-adp/src/singleton"
 )
 
 type MerchantAccountsClient struct {

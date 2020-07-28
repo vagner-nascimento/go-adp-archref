@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/vagner-nascimento/go-adp-bridge/src/loader"
+	"github.com/vagner-nascimento/go-enriching-adp/src/loader"
 	"log"
 )
 

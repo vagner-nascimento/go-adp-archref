@@ -1,6 +1,8 @@
 package appentity
 
-import "github.com/vagner-nascimento/go-adp-bridge/src/apptypes"
+import (
+	"github.com/vagner-nascimento/go-enriching-adp/src/apptype"
+)
 
 type (
 	contact struct {
@@ -9,20 +11,20 @@ type (
 		Email string `json:"email"`
 	}
 	Account struct {
-		Type             string             `json:"type"`
-		Id               string             `json:"id"`
-		MerchantId       *string            `json:"merchant_id"`
-		AccountId        *string            `json:"merchant_account_id,omitempty"`
-		Name             string             `json:"name"`
-		LegalDocument    *string            `json:"legal_document"`
-		Contacts         []contact          `json:"contacts"`
-		MerchantAccounts []MerchantAccount  `json:"merchant_accounts"`
-		Country          *string            `json:"country"`
-		UpdatedDate      *apptypes.DateTime `json:"updated_date"`
-		LastPaymentDate  *apptypes.Date     `json:"last_payment_date"`
-		BillingDay       *int               `json:"billing_day"`
-		IsActive         bool               `json:"is_active"`
-		CreditLimit      *apptypes.Money    `json:"credit_limit"`
+		Type             string            `json:"type"`
+		Id               string            `json:"id"`
+		MerchantId       *string           `json:"merchant_id"`
+		AccountId        *string           `json:"merchant_account_id,omitempty"`
+		Name             string            `json:"name"`
+		LegalDocument    *string           `json:"legal_document"`
+		Contacts         []contact         `json:"contacts"`
+		MerchantAccounts []MerchantAccount `json:"merchant_accounts"`
+		Country          *string           `json:"country"`
+		UpdatedDate      *apptype.DateTime `json:"updated_date"`
+		LastPaymentDate  *apptype.Date     `json:"last_payment_date"`
+		BillingDay       *int              `json:"billing_day"`
+		IsActive         bool              `json:"is_active"`
+		CreditLimit      *apptype.Money    `json:"credit_limit"`
 	}
 	AccountType struct {
 		Merchant string

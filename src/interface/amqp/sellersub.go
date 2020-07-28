@@ -2,10 +2,10 @@ package amqpinterface
 
 import (
 	"encoding/json"
-	"github.com/vagner-nascimento/go-adp-bridge/config"
-	appentity "github.com/vagner-nascimento/go-adp-bridge/src/app/entity"
-	"github.com/vagner-nascimento/go-adp-bridge/src/infra/logger"
-	amqpintegration "github.com/vagner-nascimento/go-adp-bridge/src/integration/amqp"
+	"github.com/vagner-nascimento/go-enriching-adp/config"
+	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
+	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
 )
 
 type sellerSub struct {

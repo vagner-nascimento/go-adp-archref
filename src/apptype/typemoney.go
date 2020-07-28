@@ -1,4 +1,4 @@
-package apptypes
+package apptype
 
 import (
 	"errors"
