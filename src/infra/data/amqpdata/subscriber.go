@@ -33,7 +33,7 @@ func SubscribeConsumer(queueName string, consumerName string, handler func([]byt
 	return
 }
 
-// OldListenSubConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
+// ListenSubConnection listen to connection status while it is alive, sending true (if is connected) or false (if is disconnected).
 // The connection still alive even if it lost the connection. It will die only if all connection retries were failed.
 // When all reties fails, the channel is closed
 func ListenSubConnection() <-chan bool {

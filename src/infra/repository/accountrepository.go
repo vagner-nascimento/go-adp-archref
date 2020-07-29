@@ -6,15 +6,15 @@ import (
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqpdata"
-	"github.com/vagner-nascimento/go-enriching-adp/src/integration/rest"
+	restintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/rest"
 )
 
 type accountRepository struct {
 	topic           string
 	publisher       *amqpdata.AmqpPublisher
-	merchantAccCli  *rest.MerchantAccountsClient
-	merchantsCli    *rest.MerchantsClient
-	affiliationsCli *rest.AffiliationsClient
+	merchantAccCli  *restintegration.MerchantAccountsClient
+	merchantsCli    *restintegration.MerchantsClient
+	affiliationsCli *restintegration.AffiliationsClient
 }
 
 func (repo *accountRepository) Save(account *appentity.Account) error {
@@ -25,7 +25,7 @@ func (repo *accountRepository) Save(account *appentity.Account) error {
 	)
 
 	if bytes, err = json.Marshal(account); err == nil {
-		isPublished, err = repo.publisher.Publish(bytes) //amqpdata.Publish(bytes, repo.topic)
+		isPublished, err = repo.publisher.Publish(bytes)
 
 		if err == nil && !isPublished {
 			err = apperror.New("account not saved", nil, nil)
@@ -54,8 +54,8 @@ func (repo *accountRepository) GetAffiliation(affId string) (appentity.Affiliati
 func NewAccountRepository() *accountRepository {
 	return &accountRepository{
 		publisher:       amqpdata.NewAmqpPublisher(config.Get().Integration.Amqp.Pubs.CrmAccount.Topic),
-		merchantAccCli:  rest.GetMerchantAccClient(),
-		merchantsCli:    rest.GetMerchantsClient(),
-		affiliationsCli: rest.GetAffiliationsClient(),
+		merchantAccCli:  restintegration.GetMerchantAccClient(),
+		merchantsCli:    restintegration.GetMerchantsClient(),
+		affiliationsCli: restintegration.GetAffiliationsClient(),
 	}
 }

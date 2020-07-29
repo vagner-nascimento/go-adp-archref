@@ -1,18 +1,17 @@
-package rest
+package restintegration
 
 import (
 	"github.com/vagner-nascimento/go-enriching-adp/config"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/httpdata"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
-	"github.com/vagner-nascimento/go-enriching-adp/src/singleton"
+	"sync"
 )
 
 type MerchantsClient struct {
-	client *httpdata.HttpClient
+	client  *httpdata.HttpClient
+	connect sync.Once
 }
-
-var singMerchCli singleton.SingResource
 
 func (mc *MerchantsClient) GetMerchant(id string) (merchant *appentity.Merchant, err error) {
 	var (
@@ -31,14 +30,13 @@ func (mc *MerchantsClient) GetMerchant(id string) (merchant *appentity.Merchant,
 	return
 }
 
-func GetMerchantsClient() *MerchantsClient {
-	singMerchCli.Once.Do(func() {
-		conf := config.Get().Integration.Rest.Merchants
+var singletonMerchCli = &MerchantsClient{}
 
-		singMerchCli.Resource = &MerchantsClient{
-			client: httpdata.NewHttpClient(conf.BaseUrl, conf.TimeOut, conf.RejectUnauthorized),
-		}
+func GetMerchantsClient() *MerchantsClient {
+	singletonMerchCli.connect.Do(func() {
+		conf := config.Get().Integration.Rest.Merchants
+		singletonMerchCli.client = httpdata.NewHttpClient(conf.BaseUrl, conf.TimeOut, conf.RejectUnauthorized)
 	})
 
-	return singMerchCli.Resource.(*MerchantsClient)
+	return singletonMerchCli
 }
