@@ -3,7 +3,7 @@ package restintegration
 import (
 	"github.com/vagner-nascimento/go-enriching-adp/config"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
-	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/httpdata"
+	httpdata "github.com/vagner-nascimento/go-enriching-adp/src/infra/data/http"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 	"sync"
 )

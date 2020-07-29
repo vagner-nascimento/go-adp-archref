@@ -1,12 +1,12 @@
 package appusecase
 
 import (
-	"github.com/vagner-nascimento/go-enriching-adp/src/app"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app/interface"
 	"github.com/vagner-nascimento/go-enriching-adp/src/channel"
 )
 
-func getMerchantEnrichmentData(acc appentity.Account, repo app.AccountDataHandler) <-chan interface{} {
+func getMerchantEnrichmentData(acc appentity.Account, repo appinterface.AccountDataHandler) <-chan interface{} {
 	accCh := make(chan interface{})
 	affCh := make(chan interface{})
 

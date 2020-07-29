@@ -5,7 +5,7 @@ import (
 	"github.com/vagner-nascimento/go-enriching-adp/config"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
-	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqpdata"
+	amqpdata "github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqp"
 	restintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/rest"
 )
 

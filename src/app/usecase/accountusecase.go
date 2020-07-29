@@ -1,8 +1,8 @@
 package appusecase
 
 import (
-	"github.com/vagner-nascimento/go-enriching-adp/src/app"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app/interface"
 	"github.com/vagner-nascimento/go-enriching-adp/src/apperror"
 )
 
@@ -17,7 +17,7 @@ func CreateAccount(entity interface{}) (*appentity.Account, error) {
 	}
 }
 
-func EnrichAccount(acc *appentity.Account, repo app.AccountDataHandler) <-chan error {
+func EnrichAccount(acc *appentity.Account, repo appinterface.AccountDataHandler) <-chan error {
 	resCh := make(chan error)
 
 	go func() {

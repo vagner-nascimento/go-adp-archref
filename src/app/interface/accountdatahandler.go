@@ -1,4 +1,4 @@
-package app
+package appinterface
 
 import appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
 

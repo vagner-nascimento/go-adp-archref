@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqpdata"
+	amqpdata "github.com/vagner-nascimento/go-enriching-adp/src/infra/data/amqp"
 	amqpintegration "github.com/vagner-nascimento/go-enriching-adp/src/integration/amqp"
 )
 

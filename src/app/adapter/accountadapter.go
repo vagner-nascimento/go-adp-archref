@@ -1,14 +1,14 @@
 package appadapter
 
 import (
-	"github.com/vagner-nascimento/go-enriching-adp/src/app"
 	appentity "github.com/vagner-nascimento/go-enriching-adp/src/app/entity"
+	"github.com/vagner-nascimento/go-enriching-adp/src/app/interface"
 	appusecase "github.com/vagner-nascimento/go-enriching-adp/src/app/usecase"
 	"github.com/vagner-nascimento/go-enriching-adp/src/infra/logger"
 )
 
 type AccountAdapter struct {
-	repo app.AccountDataHandler
+	repo appinterface.AccountDataHandler
 }
 
 func (aa *AccountAdapter) AddAccount(entity interface{}) (acc *appentity.Account, err error) {
@@ -29,6 +29,6 @@ func (aa *AccountAdapter) AddAccount(entity interface{}) (acc *appentity.Account
 	return
 }
 
-func NewAccountAdapter(repo app.AccountDataHandler) AccountAdapter {
+func NewAccountAdapter(repo appinterface.AccountDataHandler) AccountAdapter {
 	return AccountAdapter{repo: repo}
 }
