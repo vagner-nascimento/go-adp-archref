@@ -35,8 +35,8 @@ Once running, you can call http://localhos:3000/live (also /health and /ready) t
     - Running producer and consumer togheter:
         - 1st: completed in 9:43 minutes
         - 2nd (after improvments): completed in 6:59 minutes
-        - 3th (after separete amqp conn): completed in 6:23 minutes
-    - Running only consumer with data already on topics: completed in 6:00 minutes
+        - 3th (after created one amqp conn to pub and other to sub, sharing it between threads): completed in 6:23 minutes
+        - 4th (after stop to share amqp channel between threads): completed in 5:43 minutes   
 
 # requirements
     - [x] consume topics
